@@ -19,7 +19,8 @@ class Server{
 	public:
 		int		getPort();
 		void	setPort(char *input);
-		void	socketInit();
+		void	setupSocket();
+		void	setupServer(char **input);
 		void	receive();
 		void	setPassword(char *input);
 		std::string getPassword();

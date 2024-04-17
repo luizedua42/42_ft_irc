@@ -25,5 +25,5 @@
 # include <cstdio>
 # include <errno.h>
 # include <sstream>
-
+# define MAX_CLIENTS 666
 #endif
