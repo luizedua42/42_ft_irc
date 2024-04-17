@@ -24,4 +24,6 @@
 # include <cstdlib>
 # include <cstdio>
 # include <errno.h>
+# include <sstream>
+
 #endif
