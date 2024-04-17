@@ -20,5 +20,8 @@
 # include <arpa/inet.h>
 # include <csignal>
 # include <fcntl.h>
-
+# include <limits>
+# include <cstdlib>
+# include <cstdio>
+# include <errno.h>
 #endif
