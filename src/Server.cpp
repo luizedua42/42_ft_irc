@@ -54,9 +54,9 @@ void Server::setupSocket(){
 }
 
 void Server::receive(){
+	int newsockfd;
+	newsockfd = accept(_sockfd, NULL, NULL);
 	while (true){
-		int newsockfd;
-		newsockfd = accept(_sockfd, NULL, NULL);
 		if (newsockfd < 0){
 			perror("accept");
 			throw std::runtime_error("");
