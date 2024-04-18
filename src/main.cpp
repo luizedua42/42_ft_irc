@@ -8,6 +8,7 @@
 
 #include "../include/includes.hpp"
 
+// ./ircserv <port> <password>
 
 int main(int ac, char **av){
 	if (ac != 3){
