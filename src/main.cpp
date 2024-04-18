@@ -8,6 +8,10 @@
 
 #include "../include/includes.hpp"
 
+#include "../include/FakeUser.hpp"
+#include "../include/FakeChannel.hpp"
+#include <vector>
+
 // ./ircserv <port> <password>
 
 int main(int ac, char **av){
