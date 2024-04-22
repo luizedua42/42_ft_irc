@@ -29,17 +29,17 @@ class Server{
 		void		setPassword(char *input);
 		std::string	getPassword();
 
-		//operations
+		//Commands
 		void		join(std::string channel);
 		void		part(std::string channel);
 		void		names(std::string channel);
-		void		list();
-		void		privmsg(std::string channel, std::string message);
-		void		quit();
+		void		list(std::string channel);
+		void		privmsg(std::string channel);
+		void		quit(std::string channel);
 		void		nick(std::string nickname);
-		void		user(std::string username, std::string realname);
-		void		oper(std::string user, std::string password);
-		void		mode(std::string channel, std::string mode);
+		void		user(std::string username);
+		void		oper(std::string user);
+		void		mode(std::string channel);
 };
 
 #endif

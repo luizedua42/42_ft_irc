@@ -73,18 +73,66 @@ void Server::receive() {
 
 void Server::parseOptions(std::string buff) {
 
-	void (Server::*fct_ptr[4])(void) = {
+	void (Server::*fct_ptr[10])(std::string buff) = {
 		&Server::user, &Server::nick, &Server::join, &Server::part, &Server::names, &Server::list, &Server::privmsg, &Server::quit, &Server::oper, &Server::mode
 	};
+
 	std::string option = buff.substr(0, buff.find(" "));
 	std::string requests[] = {"USER", "NICK", "JOIN", "PART", "NAMES", "LIST", "PRIVMSG", "QUIT", "OPER", "MODE"};
-	for(int i = 0; i < 8; i++){
-		if (option == requests[i]){
-			std::cout << "Request: " << requests << std::endl;
-			break;
-		}
+	int i;
+	for(i = 0; i < 10 && requests[i] != option; i++);
+	if(i == 10){
+		std::cerr << "Invalid request" << std::endl;
+		i = 0;
+		return;
 	}
+	(this->*fct_ptr[i])(buff.substr(buff.find(" ") + 1));
+	i = 0;
 }
+
+
+void Server::join(std::string channel) {
+	std::cout << "Joining channel: " << channel << std::endl;
+}
+
+void Server::part(std::string channel) {
+	std::cout << "Parting channel: " << channel << std::endl;
+}
+
+void Server::names(std::string channel) {
+	std::cout << "Listing names in channel: " << channel << std::endl;
+}
+
+void Server::list(std::string channel) {
+	(void)channel;
+	std::cout << "Listing all channels" << std::endl;
+}
+
+void Server::privmsg(std::string channel) {
+	std::cout << "Sending message to channel: " << channel << " - " << std::endl;
+}
+
+void Server::quit(std::string channel) {
+	(void )channel;
+	std::cout << "Quitting" << std::endl;
+}
+
+void Server::nick(std::string nickname) {
+	std::cout << "Changing nickname to: " << nickname << std::endl;
+}
+
+void Server::user(std::string username) {
+	std::cout << "Setting username to: " << username << std::endl;
+}
+
+void Server::oper(std::string user) {
+	std::cout << "Opering user: " << user << std::endl;
+}
+
+void Server::mode(std::string channel) {
+	std::cout << "Setting mode: " << " in channel: " << channel << std::endl;
+}
+
 
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);
