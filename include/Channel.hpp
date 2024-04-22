@@ -11,8 +11,8 @@ class Channel {
 		std::list<User>		_operators;
 
 	private:
-		void				promoteToOperator(User user);
-		void				demoteFromOperator(User user);
+		void				promoteToOperator(User user); //add to operator, remove from user
+		void				demoteFromOperator(User user); //add to user, remove from operator
 		std::list<User>		getOperators();
 		std::list<User>		getNonOperators();
 };
