@@ -1,8 +1,8 @@
-#ifndef FAKEUSER_HPP
-# define FAKEUSER_HPP
+#ifndef USER_HPP
+# define USER_HPP
 # include "includes.hpp"
 
-class FakeUser {
+class User {
 	public:
 		int			_id;
 		std::string	_name;
