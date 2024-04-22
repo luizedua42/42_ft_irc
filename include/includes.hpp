@@ -5,7 +5,7 @@
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 15/04/2024
 *========================**/
-
+#pragma once
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
 
@@ -25,5 +25,8 @@
 # include <cstdio>
 # include <errno.h>
 # include <sstream>
+# include <cstring>
+# include "Server.hpp"
+
 # define MAX_CLIENTS 666
 #endif

@@ -8,7 +8,7 @@
 
 #include "../include/Server.hpp"
 
-void Server::setPort(char *input){
+void Server::setPort(char *input) {
 	std::stringstream iss;
 	iss << input;
 	int port;
@@ -20,19 +20,19 @@ void Server::setPort(char *input){
 	_port = port;
 }
 
-int Server::getPort(){
+int Server::getPort() {
 	return _port;
 }
 
-void Server::setPassword(char *input){
+void Server::setPassword(char *input) {
 	_password = input;
 }
 
-std::string Server::getPassword(){
+std::string Server::getPassword() {
 	return _password;
 }
 
-void Server::setupServer(char **input){
+void Server::setupServer(char **input) {
 	this->setPort(input[1]);
 	this->setPassword(input[2]);
 	_serv_addr.sin_family = AF_INET;
@@ -40,7 +40,7 @@ void Server::setupServer(char **input){
 	_serv_addr.sin_port = htons(_port);
 }
 
-void Server::setupSocket(){
+void Server::setupSocket() {
 	int opval = 1;
 	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	std::cout << "Socket: " << _sockfd << std::endl;
@@ -53,8 +53,9 @@ void Server::setupSocket(){
 	listen(_sockfd, std::numeric_limits<int>::max());
 }
 
-void Server::receive(){
+void Server::receive() {
 	int newsockfd;
+	char buff[100000];
 	newsockfd = accept(_sockfd, NULL, NULL);
 	while (true){
 		if (newsockfd < 0){
@@ -63,26 +64,29 @@ void Server::receive(){
 		}
 		if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
 			throw std::runtime_error("Error on fcntl");
-		char buff[100000];
-		recv(newsockfd, buff, 100000, 0);
+		recv(newsockfd, buff, sizeof(buff), 0);
 		std::cout << buff;
-		std::string response = "CAP * LS :\r\n";
-		send(newsockfd, response.c_str(), response.size(), 0);
-		recv(newsockfd, buff, 100000, 0);
-		std::cout << buff;
+		this->parseOptions(std::string(buff));
+		bzero(buff, sizeof(buff));
 	}
 }
 
-// int newsockfd;
-	// newsockfd = accept(_sockfd, NULL, NULL);
-	// if (newsockfd < 0){
-		// perror("accept");
-		// std::exit(1);
-	// }
-	// char buff[100000];
-	// recv(newsockfd, buff, 100000, 0);
-	// std::cout << buff;
-	// std::string response = "CAP * LS :\r\n";
-	// send(newsockfd, response.c_str(), response.size(), 0);
-	// recv(newsockfd, buff, 100000, 0);
-	// std::cout << buff;
+void Server::parseOptions(std::string buff) {
+
+	void (Server::*fct_ptr[4])(void) = {
+		&Server::user, &Server::nick, &Server::join, &Server::part, &Server::names, &Server::list, &Server::privmsg, &Server::quit, &Server::oper, &Server::mode
+	};
+	std::string option = buff.substr(0, buff.find(" "));
+	std::string requests[] = {"USER", "NICK", "JOIN", "PART", "NAMES", "LIST", "PRIVMSG", "QUIT", "OPER", "MODE"};
+	for(int i = 0; i < 8; i++){
+		if (option == requests[i]){
+			std::cout << "Request: " << requests << std::endl;
+			break;
+		}
+	}
+}
+
+// std::string response = "CAP * LS :\r\n";
+// send(newsockfd, response.c_str(), response.size(), 0);
+// recv(newsockfd, buff, 100000, 0);
+// std::cout << buff;
