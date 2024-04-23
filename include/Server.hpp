@@ -18,28 +18,32 @@ class Server{
 		struct sockaddr_in	_serv_addr;
 
 	public:
-		void		receive();
-		void		parseOptions(std::string buff);
+		//Methods
+		void						receive();
+		void						selectOptions(std::string buff);
+		std::vector<std::string>	parseOptions(std::string buff);
 
+		//Setup
 		void		setupSocket();
 		void		setupServer(char **input);
-
+		
+		//Getters
 		int			getPort();
 		void		setPort(char *input);
 		void		setPassword(char *input);
 		std::string	getPassword();
 
 		//Commands
-		void		join(std::string channel);
-		void		part(std::string channel);
-		void		names(std::string channel);
-		void		list(std::string channel);
-		void		privmsg(std::string channel);
-		void		quit(std::string channel);
-		void		nick(std::string nickname);
-		void		user(std::string username);
-		void		oper(std::string user);
-		void		mode(std::string channel);
+		void		join(std::vector<std::string>);
+		void		privmsg(std::vector<std::string>);
+		void		quit(std::vector<std::string>);
+		void		nick(std::vector<std::string>);
+		void		user(std::vector<std::string>);
+		void		oper(std::vector<std::string>);
+		void		mode(std::vector<std::string>);
+		void		topic(std::vector<std::string>);
+		void		invite(std::vector<std::string>);
+		void		kick(std::vector<std::string>);
 };
 
 #endif

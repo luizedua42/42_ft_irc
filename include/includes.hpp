@@ -26,6 +26,8 @@
 # include <errno.h>
 # include <sstream>
 # include <cstring>
+# include <vector>
+# include <algorithm>
 # include "Server.hpp"
 
 # define MAX_CLIENTS 666
