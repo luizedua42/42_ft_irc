@@ -70,17 +70,18 @@ void Server::receive() {
 		bzero(buff, sizeof(buff));
 	}
 }
-//separate string into options in a vector format including the last substring
-//if theres no space, the option is the whole string
+
 std::vector<std::string> Server::parseOptions(std::string str) {
-    std::string word;
-    std::stringstream ss(str);
-    std::vector<std::string> splitted;
+	std::string word;
+	std::stringstream ss(str);
+	std::vector<std::string> splitted;
+	while (std::getline(ss, word, ' '))
+		if(word.find('\r') != std::string::npos)
+			splitted.push_back(word.substr(0, word.find('\r')));
+		else
+			splitted.push_back(word);
 
-    while (std::getline(ss, word, ' '))
-        splitted.push_back(word);
-
-    return splitted;
+	return splitted;
 }
 
 void Server::selectOptions(std::string buff) {
@@ -97,7 +98,7 @@ void Server::selectOptions(std::string buff) {
 	for(i = 0; i < 10 && requests[i] != option; i++);
 	
 	if(i == 10){
-		std::cerr << "\033[0;31m" << "Invalid request: " << option << "\033[0m" << std::endl;
+		std::cerr << "Invalid request: " << option << std::endl;
 		i = 0;
 		return;
 	}
@@ -108,58 +109,58 @@ void Server::selectOptions(std::string buff) {
 
 
 void Server::join(std::vector<std::string> options) {
-	std::string channel = options[0].substr(0, options[0].find('\r'));
+	std::string channel = options[0];
 
-	std::cout << "\033[0;33m" << "Joining channel: " << channel << "\033[0m"<<std::endl;
+	std::cout << "Joining channel: " << channel << std::endl;
 }
 
 void Server::privmsg(std::vector<std::string> options) {
-	std::cout << "\033[0;33m" << "Sending message to channel: " << options[0] << " - " << "\033[0m"<<std::endl;
+	std::cout << "Sending message to channel: " << options[0] << " - " << std::endl;
 }
 
 void Server::quit(std::vector<std::string> options) {
 	std::string channel= options[0];
 
-	std::cout << "\033[0;33m" << "Quitting" << channel << "\033[0m"<<std::endl;
+	std::cout << "Quitting" << channel << std::endl;
 	close(_sockfd);
 	exit(0);
 }
-
+//nick
 void Server::nick(std::vector<std::string> option) {
 	std::string nickname = option[0].substr(0, option[0].find('\r'));
 
-	std::cout << "\033[0;31m" << "Changing nickname to: " << nickname << "\033[0m"<<std::endl;
+	std::cout << "Changing nickname to: " << nickname << std::endl;
 }
 
 void Server::user(std::vector<std::string> option) {
 	std::string username = option[0];
 
-	std::cout << "\033[0;33m" << "Setting username to: " << username << "\033[0m"<<std::endl;
+	std::cout << "Setting username to: " << username << std::endl;
 }
 
 void Server::oper(std::vector<std::string> option) {
-	std::cout << "\033[0;33m" << "Opering user: " << option[0] << "\033[0m"<<std::endl;
+	std::cout << "Opering user: " << option[0] << std::endl;
 }
 
 void Server::mode(std::vector<std::string> option) {
 	std::string channel = option[0];
 	std::string mode = option[1];
 
-	std::cout << "\033[0;33m" << "Setting mode: " << mode << " in channel: " << channel << "\033[0m"<<std::endl;
+	std::cout << "Setting mode: " << mode << " in channel: " << channel << std::endl;
 }
 
 void Server::topic(std::vector<std::string> option) {
-	std::cout << "\033[0;33m" << "Setting topic in channel: " << option[0] << "\033[0m"<<std::endl;
+	std::cout << "Setting topic in channel: " << option[0] << std::endl;
 }
 
 void Server::invite(std::vector<std::string> option) {
-	std::cout << "\033[0;33m" << "Inviting user to channel: " << option[0] << "\033[0m"<<std::endl;
+	std::cout << "Inviting user to channel: " << option[0] << std::endl;
 }
 
 void Server::kick(std::vector<std::string> option) {
-	std::string channel = option[0];
+	std::string channel = option[0].substr(0, option[0].find('\r'));
 	std::string user = option[1];
-	std::cout << "\033[0;33m" << "Kicking " << user << " from channel: " << channel << "\033[0m"<<std::endl;
+	std::cout << "Kicking " << user << " from channel: " << channel << std::endl;
 }
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);
