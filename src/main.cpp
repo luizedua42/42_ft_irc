@@ -15,18 +15,19 @@ int main(int ac, char **av){
 		return 1;
 	}
 	Server server;
-	server.setupServer(av);
-
+	server.setPort(av[1]);
+	server.setPassword(av[2]);
+	
 	std::cout << "Port: " << server.getPort() << std::endl;
 	std::cout << "Password: " << server.getPassword() << std::endl;
-	server.setupSocket();
 	std::cout << "Server is running..." << std::endl;
-	try{
-		server.receive();
-	}
-	catch(const std::exception& e){
+	try {
+		server.setupServer();
+	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;
 	}
+
+
 	std::cout << "Server is closing..." << std::endl;
 	return 0;
 }

@@ -17,8 +17,8 @@ C++ = c++
 CFLAGS = -Wall -Werror -Wextra -g3 -std=c++98
 
 # ./src/Server.cpp ./src/Client.cpp 
-HEADER_FILES = ./include/includes.hpp ./include/Server.hpp
-SOURCES      = ./src/main.cpp ./src/Server.cpp
+HEADER_FILES = ./include/includes.hpp ./include/Server.hpp ./include/Client.hpp
+SOURCES      = ./src/main.cpp ./src/Server.cpp ./src/Client.cpp
 OBJ_DIR      = ./mandatory/obj
 OBJ_FILES    = $(SRC_FILES:%.c=$(OBJ_DIR)/%.o)
 INCLUDE =	-I ./include

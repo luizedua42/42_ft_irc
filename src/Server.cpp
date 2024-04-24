@@ -6,7 +6,7 @@
 * @createdOn : 17/04/2024
 *========================**/
 
-#include "../include/Server.hpp"
+#include "../include/includes.hpp"
 
 void Server::setPort(char *input) {
 	std::stringstream iss;
@@ -32,43 +32,91 @@ std::string Server::getPassword() {
 	return _password;
 }
 
-void Server::setupServer(char **input) {
-	this->setPort(input[1]);
-	this->setPassword(input[2]);
-	_serv_addr.sin_family = AF_INET;
-	_serv_addr.sin_addr.s_addr = INADDR_ANY;
-	_serv_addr.sin_port = htons(_port);
+void Server::setupServer() {
+	this->setupSocket();
+
+	while (true) {
+		
+		if(poll(&_fds[0], _fds.size(), -1) < 0)
+			throw std::runtime_error("Error on poll");
+
+		for(size_t i = 0 ; i < _fds.size(); i++) {
+			if(_fds[i].revents & POLLIN) {
+				if(_fds[i].fd == _sockfd)
+					acceptNewClient();
+				else {
+					listenClient(_fds[i].fd);
+				}
+			}
+		}
+	}
+	//close all fds
+}
+
+void Server::listenClient(int clientFD) {
+	char buff[513];
+	bzero(buff, 513);
+
+	ssize_t byte = recv(clientFD, buff, 513, 0);
+	if(byte <= 0){
+		//clear client
+		close(clientFD);
+		return;
+	}
+
+	buff[byte] = '\0';
+	selectOptions(buff);
 }
 
 void Server::setupSocket() {
+	struct sockaddr_in serv;
+	struct pollfd newPoll;
 	int opval = 1;
+
+	serv.sin_family = AF_INET;
+	serv.sin_addr.s_addr = INADDR_ANY;
+	serv.sin_port = htons(_port);
+
 	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	std::cout << "Socket: " << _sockfd << std::endl;
 	if (_sockfd < 0)
 		throw std::runtime_error("Error opening socket");
+
 	if(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int)) < 0)
 		throw std::runtime_error("Error on setsockopt");
-	if (bind(_sockfd, (struct sockaddr *) &_serv_addr, sizeof(_serv_addr)) < 0)
+	if(fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("Error on fcntl");
+	if (bind(_sockfd, (struct sockaddr *) &serv, sizeof(serv)) < 0)
 		throw std::runtime_error("Error on binding");
-	listen(_sockfd, std::numeric_limits<int>::max());
+	if(listen(_sockfd, SOMAXCONN) < 0)
+		throw std::runtime_error("Error on listen");
+	newPoll.fd = _sockfd;
+	newPoll.events = POLLIN;
+	newPoll.revents = 0;
+
+	_fds.push_back(newPoll);
 }
 
-void Server::receive() {
-	int newsockfd;
-	char buff[100000];
-	newsockfd = accept(_sockfd, NULL, NULL);
-	while (true){
-		if (newsockfd < 0){
-			perror("accept");
-			throw std::runtime_error("");
-		}
-		if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
-			throw std::runtime_error("Error on fcntl");
-		recv(newsockfd, buff, sizeof(buff), 0);
-		std::cout << buff;
-		this->selectOptions(std::string(buff));
-		bzero(buff, sizeof(buff));
+void Server::acceptNewClient() {
+	Client client;
+	struct sockaddr_in cliAdd;
+	struct pollfd newPoll;
+
+	int newsockfd = accept(_sockfd, NULL, NULL);
+	if (newsockfd < 0){
+		perror("accept");
+		throw std::runtime_error("");
 	}
+	if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("Error on fcntl");
+
+	newPoll.fd = newsockfd;
+	newPoll.events = POLLIN;
+	newPoll.revents = 0;
+	
+	client.setClientFD(newsockfd);
+	client.setClientIP(inet_ntoa(cliAdd.sin_addr));
+	_fds.push_back(newPoll);
 }
 
 std::vector<std::string> Server::parseOptions(std::string str) {
@@ -106,7 +154,6 @@ void Server::selectOptions(std::string buff) {
 	(this->*fct_ptr[i])(parseOptions(buff.substr(buff.find(" ") + 1)));
 	i = 0;
 }
-
 
 void Server::join(std::vector<std::string> options) {
 	std::string channel = options[0];

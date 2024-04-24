@@ -8,6 +8,7 @@
 #pragma once
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
+# define MAX_CLIENTS 666
 
 # include <iostream>
 # include <string>
@@ -29,6 +30,6 @@
 # include <vector>
 # include <algorithm>
 # include "Server.hpp"
+# include "Client.hpp"
 
-# define MAX_CLIENTS 666
 #endif

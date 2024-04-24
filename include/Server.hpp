@@ -12,20 +12,21 @@
 
 class Server{
 	private:
-		int					_port;
-		int					_sockfd;
-		std::string			_password;
-		struct sockaddr_in	_serv_addr;
+		int							_port;
+		int							_sockfd;
+		std::string					_password;
+		std::vector<struct pollfd>	_fds;
 
 	public:
 		//Methods
-		void						receive();
+		void						listenClient(int clientFD);
+		void						acceptNewClient();
 		void						selectOptions(std::string buff);
 		std::vector<std::string>	parseOptions(std::string buff);
 
 		//Setup
 		void		setupSocket();
-		void		setupServer(char **input);
+		void		setupServer();
 		
 		//Getters
 		int			getPort();
