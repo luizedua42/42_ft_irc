@@ -22,6 +22,8 @@ int main(int ac, char **av){
 	std::cout << "Password: " << server.getPassword() << std::endl;
 	std::cout << "Server is running..." << std::endl;
 	try {
+		signal(SIGINT, server.handleSig);
+		signal(SIGQUIT, server.handleSig);
 		server.setupServer();
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;

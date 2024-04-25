@@ -36,10 +36,10 @@ std::string Server::getPassword() {
 void Server::setupServer() {
 	this->setupSocket();
 
-	while (true) {
+	while (_signal) {
 		
-		if(poll(&_fds[0], _fds.size(), -1) < 0)
-			throw std::runtime_error("Error on poll");
+		if(poll(&_fds[0], _fds.size(), -1) == -1 && _signal)
+			throw std::runtime_error(ERRMSG_POLL);
 
 		for(size_t i = 0 ; i < _fds.size(); i++) {
 			if(_fds[i].revents & POLLIN) {
@@ -51,7 +51,7 @@ void Server::setupServer() {
 			}
 		}
 	}
-	//close all fds
+	closeFds();
 }
 
 void Server::listenClient(int clientFD) {
@@ -60,7 +60,7 @@ void Server::listenClient(int clientFD) {
 
 	ssize_t byte = recv(clientFD, buff, 513, 0);
 	if(byte <= 0){
-		Server::clearClients();
+		Server::clearClients(clientFD);
 		close(clientFD);
 		return;
 	}
@@ -122,15 +122,40 @@ void Server::acceptNewClient() {
 	
 	client.setClientFD(newsockfd);
 	client.setClientIP(inet_ntoa(cliAdd.sin_addr));
+	_clients.push_back(client);
 	_fds.push_back(newPoll);
 }
 
-void Server::clearClients() {
-	for(size_t i = 0; i < _fds.size(); i++) {
-		close(_fds[i].fd);
+void Server::clearClients(int clientFd) {
+	for(size_t i = 0; i < _fds.size(); i++){
+		if (_fds[i].fd == clientFd) {
+			_fds.erase(_fds.begin() + i); 
+			break;
+		}
+ }
+	for(size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i].getClientFD() == clientFd) {
+			_clients.erase(_clients.begin() + i);
+			break;
+		}
 	}
 }
 
+void Server::closeFds() {
+	for(size_t i = 0; i < _clients.size(); i++) {
+			close(_clients[i].getClientFD());
+	}
+	if(_sockfd != -1)
+		close(_sockfd);
+}
+
+
+
+bool Server::_signal = true;
+void Server::handleSig(int signum) {
+	(void)signum;
+	Server::_signal = false;
+}
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);
 // recv(newsockfd, buff, 100000, 0);
