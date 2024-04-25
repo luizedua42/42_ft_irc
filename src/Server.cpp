@@ -6,7 +6,8 @@
 * @createdOn : 17/04/2024
 *========================**/
 
-#include "../include/Server.hpp"
+#include "../include/includes.hpp"
+#include "../include/error.hpp"
 
 void Server::setPort(char *input) {
 	std::stringstream iss;
@@ -32,135 +33,128 @@ std::string Server::getPassword() {
 	return _password;
 }
 
-void Server::setupServer(char **input) {
-	this->setPort(input[1]);
-	this->setPassword(input[2]);
-	_serv_addr.sin_family = AF_INET;
-	_serv_addr.sin_addr.s_addr = INADDR_ANY;
-	_serv_addr.sin_port = htons(_port);
-}
+void Server::setupServer() {
+	this->setupSocket();
 
-void Server::setupSocket() {
-	int opval = 1;
-	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	std::cout << "Socket: " << _sockfd << std::endl;
-	if (_sockfd < 0)
-		throw std::runtime_error("Error opening socket");
-	if(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int)) < 0)
-		throw std::runtime_error("Error on setsockopt");
-	if (bind(_sockfd, (struct sockaddr *) &_serv_addr, sizeof(_serv_addr)) < 0)
-		throw std::runtime_error("Error on binding");
-	listen(_sockfd, std::numeric_limits<int>::max());
-}
+	while (_signal) {
+		
+		if(poll(&_fds[0], _fds.size(), -1) == -1 && _signal)
+			throw std::runtime_error(ERRMSG_POLL);
 
-void Server::receive() {
-	int newsockfd;
-	char buff[100000];
-	newsockfd = accept(_sockfd, NULL, NULL);
-	while (true){
-		if (newsockfd < 0){
-			perror("accept");
-			throw std::runtime_error("");
+		for(size_t i = 0 ; i < _fds.size(); i++) {
+			if(_fds[i].revents & POLLIN) {
+				if(_fds[i].fd == _sockfd)
+					acceptNewClient();
+				else {
+					listenClient(_fds[i].fd);
+				}
+			}
 		}
-		if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
-			throw std::runtime_error("Error on fcntl");
-		recv(newsockfd, buff, sizeof(buff), 0);
-		std::cout << buff;
-		this->selectOptions(std::string(buff));
-		bzero(buff, sizeof(buff));
 	}
+	closeFds();
 }
 
-std::vector<std::string> Server::parseOptions(std::string str) {
-	std::string word;
-	std::stringstream ss(str);
-	std::vector<std::string> splitted;
-	while (std::getline(ss, word, ' '))
-		if(word.find('\r') != std::string::npos)
-			splitted.push_back(word.substr(0, word.find('\r')));
-		else
-			splitted.push_back(word);
+void Server::listenClient(int clientFD) {
+	char buff[513];
+	bzero(buff, 513);
 
-	return splitted;
-}
-
-void Server::selectOptions(std::string buff) {
-	int i;
-
-	void (Server::*fct_ptr[10])(std::vector<std::string>) = { 
-		&Server::user, &Server::nick, &Server::join, &Server::privmsg, &Server::quit,
-		&Server::oper, &Server::mode, &Server::topic, &Server::invite, &Server::kick
-	};
-
-	std::string option = buff.substr(0, buff.find(" "));
-	std::string requests[] = {"USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "OPER", "MODE", "TOPIC", "INVITE", "KICK"};
-	
-	for(i = 0; i < 10 && requests[i] != option; i++);
-	
-	if(i == 10){
-		std::cerr << "Invalid request: " << option << std::endl;
-		i = 0;
+	ssize_t byte = recv(clientFD, buff, 513, 0);
+	if(byte <= 0){
+		Server::clearClients(clientFD);
+		close(clientFD);
 		return;
 	}
 
-	(this->*fct_ptr[i])(parseOptions(buff.substr(buff.find(" ") + 1)));
-	i = 0;
+	buff[byte] = '\0';
+	_serverOper.selectOptions(buff);
+}
+
+void Server::setupSocket() {
+	struct sockaddr_in serv;
+	struct pollfd newPoll;
+	int opval = 1;
+
+	serv.sin_family = AF_INET;
+	serv.sin_addr.s_addr = INADDR_ANY;
+	serv.sin_port = htons(_port);
+
+	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	std::cout << "Socket: " << _sockfd << std::endl;
+	if (_sockfd < 0)
+		throw std::runtime_error(ERRMSG_SOCKET);
+
+	if(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int)) < 0)
+		throw std::runtime_error(ERRMSG_SETSOCKOPT);
+
+	if(fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error(ERRMSG_FCNTL);
+
+	if (bind(_sockfd, (struct sockaddr *) &serv, sizeof(serv)) < 0)
+		throw std::runtime_error(ERRMSG_BIND);
+
+	if(listen(_sockfd, SOMAXCONN) < 0)
+		throw std::runtime_error(ERRMSG_LISTEN);
+
+	newPoll.fd = _sockfd;
+	newPoll.events = POLLIN;
+	newPoll.revents = 0;
+
+	_fds.push_back(newPoll);
+}
+
+void Server::acceptNewClient() {
+	Client client;
+	struct sockaddr_in cliAdd;
+	struct pollfd newPoll;
+	socklen_t clilen = sizeof(cliAdd);
+
+	int newsockfd = accept(_sockfd, (struct sockaddr *) &cliAdd, &clilen);
+	
+	if (newsockfd < 0)
+		throw std::runtime_error(ERRMSG_ACCEPT);
+
+	if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error(ERRMSG_FCNTL);
+
+	newPoll.fd = newsockfd;
+	newPoll.events = POLLIN;
+	newPoll.revents = 0;
+	
+	client.setClientFD(newsockfd);
+	client.setClientIP(inet_ntoa(cliAdd.sin_addr));
+	_clients.push_back(client);
+	_fds.push_back(newPoll);
+}
+
+void Server::clearClients(int clientFd) {
+	for(size_t i = 0; i < _fds.size(); i++){
+		if (_fds[i].fd == clientFd) {
+			_fds.erase(_fds.begin() + i); 
+			break;
+		}
+ }
+	for(size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i].getClientFD() == clientFd) {
+			_clients.erase(_clients.begin() + i);
+			break;
+		}
+	}
+}
+
+void Server::closeFds() {
+	for(size_t i = 0; i < _clients.size(); i++) {
+			close(_clients[i].getClientFD());
+	}
+	if(_sockfd != -1)
+		close(_sockfd);
 }
 
 
-void Server::join(std::vector<std::string> options) {
-	std::string channel = options[0];
 
-	std::cout << "Joining channel: " << channel << std::endl;
-}
-
-void Server::privmsg(std::vector<std::string> options) {
-	std::cout << "Sending message to channel: " << options[0] << " - " << std::endl;
-}
-
-void Server::quit(std::vector<std::string> options) {
-	std::string channel= options[0];
-
-	std::cout << "Quitting" << channel << std::endl;
-	close(_sockfd);
-	exit(0);
-}
-//nick
-void Server::nick(std::vector<std::string> option) {
-	std::string nickname = option[0].substr(0, option[0].find('\r'));
-
-	std::cout << "Changing nickname to: " << nickname << std::endl;
-}
-
-void Server::user(std::vector<std::string> option) {
-	std::string username = option[0];
-
-	std::cout << "Setting username to: " << username << std::endl;
-}
-
-void Server::oper(std::vector<std::string> option) {
-	std::cout << "Opering user: " << option[0] << std::endl;
-}
-
-void Server::mode(std::vector<std::string> option) {
-	std::string channel = option[0];
-	std::string mode = option[1];
-
-	std::cout << "Setting mode: " << mode << " in channel: " << channel << std::endl;
-}
-
-void Server::topic(std::vector<std::string> option) {
-	std::cout << "Setting topic in channel: " << option[0] << std::endl;
-}
-
-void Server::invite(std::vector<std::string> option) {
-	std::cout << "Inviting user to channel: " << option[0] << std::endl;
-}
-
-void Server::kick(std::vector<std::string> option) {
-	std::string channel = option[0].substr(0, option[0].find('\r'));
-	std::string user = option[1];
-	std::cout << "Kicking " << user << " from channel: " << channel << std::endl;
+bool Server::_signal = true;
+void Server::handleSig(int signum) {
+	(void)signum;
+	Server::_signal = false;
 }
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);

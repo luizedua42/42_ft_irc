@@ -12,20 +12,24 @@
 
 class Server{
 	private:
-		int					_port;
-		int					_sockfd;
-		std::string			_password;
-		struct sockaddr_in	_serv_addr;
+		Oper						_serverOper;
+		int							_port;
+		int							_sockfd;
+		static bool					_signal;
+		std::string					_password;
+		std::vector<Client>			_clients;
+		std::vector<struct pollfd>	_fds;
 
 	public:
 		//Methods
-		void						receive();
-		void						selectOptions(std::string buff);
-		std::vector<std::string>	parseOptions(std::string buff);
-
+		void						listenClient(int clientFD);
+		void						acceptNewClient();
+		void						clearClients(int clientFd);
+		void						closeFds();
+		static void					handleSig(int signum);
 		//Setup
 		void		setupSocket();
-		void		setupServer(char **input);
+		void		setupServer();
 		
 		//Getters
 		int			getPort();
@@ -34,16 +38,7 @@ class Server{
 		std::string	getPassword();
 
 		//Commands
-		void		join(std::vector<std::string>);
-		void		privmsg(std::vector<std::string>);
-		void		quit(std::vector<std::string>);
-		void		nick(std::vector<std::string>);
-		void		user(std::vector<std::string>);
-		void		oper(std::vector<std::string>);
-		void		mode(std::vector<std::string>);
-		void		topic(std::vector<std::string>);
-		void		invite(std::vector<std::string>);
-		void		kick(std::vector<std::string>);
+
 };
 
 #endif
