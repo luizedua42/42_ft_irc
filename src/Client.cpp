@@ -22,7 +22,7 @@ void Client::setNickName(std::string nickName) {
 	_nickName = nickName;
 }
 
-void Client::setClientIP(std::string clientIP) {
+void Client::setClientIP(char *clientIP) {
 	_clientIP = clientIP;
 }
 

@@ -12,6 +12,7 @@
 
 class Server{
 	private:
+		Oper						_serverOper;
 		int							_port;
 		int							_sockfd;
 		std::string					_password;
@@ -21,8 +22,7 @@ class Server{
 		//Methods
 		void						listenClient(int clientFD);
 		void						acceptNewClient();
-		void						selectOptions(std::string buff);
-		std::vector<std::string>	parseOptions(std::string buff);
+		void						clearClients();
 
 		//Setup
 		void		setupSocket();
@@ -35,16 +35,7 @@ class Server{
 		std::string	getPassword();
 
 		//Commands
-		void		join(std::vector<std::string>);
-		void		privmsg(std::vector<std::string>);
-		void		quit(std::vector<std::string>);
-		void		nick(std::vector<std::string>);
-		void		user(std::vector<std::string>);
-		void		oper(std::vector<std::string>);
-		void		mode(std::vector<std::string>);
-		void		topic(std::vector<std::string>);
-		void		invite(std::vector<std::string>);
-		void		kick(std::vector<std::string>);
+
 };
 
 #endif

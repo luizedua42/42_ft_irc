@@ -24,7 +24,7 @@ class Client {
 		void setClientFD(int clientFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
-		void setClientIP(std::string clientIP);
+		void setClientIP(char * clientIP);
 		
 		int			getClientFD();
 		std::string	getRealName();

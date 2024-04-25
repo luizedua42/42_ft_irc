@@ -29,6 +29,7 @@
 # include <cstring>
 # include <vector>
 # include <algorithm>
+# include "Oper.hpp"
 # include "Server.hpp"
 # include "Client.hpp"
 
