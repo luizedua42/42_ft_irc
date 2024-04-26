@@ -45,7 +45,7 @@ void Server::setupServer() {
 		for(size_t i = 0 ; i < _fds.size(); i++) {
 			if(_fds[i].revents & POLLIN) {
 				if(_fds[i].fd == _sockfd)
-					acceptNewClient();
+					acceptNewClient("client1");
 				else {
 					listenClient(_fds[i].fd);
 				}
@@ -103,8 +103,8 @@ void Server::setupSocket() {
 	_fds.push_back(newPoll);
 }
 
-void Server::acceptNewClient() {
-	Client client;
+void Server::acceptNewClient(const char* nickName) {
+	Client client(nickName);
 	struct sockaddr_in cliAdd;
 	struct pollfd newPoll;
 	socklen_t clilen = sizeof(cliAdd);

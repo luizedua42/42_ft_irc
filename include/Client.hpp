@@ -6,10 +6,12 @@
 * @createdOn : 24/04/2024
 *========================**/
 
-#pragma once 
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 # include "includes.hpp"
+
+class Channel;
+
 class Client {
 	
 	private:
@@ -29,6 +31,8 @@ class Client {
 		std::string	getRealName();
 		std::string	getNickName();
 		std::string	getClientIP();
+
+		Client(const char* nickname);
 };
 
 #endif

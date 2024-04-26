@@ -42,3 +42,5 @@ std::string Client::getNickName() {
 std::string Client::getClientIP() {
 	return _clientIP;
 }
+
+Client::Client(const char* nickName) : _nickName(nickName) {}

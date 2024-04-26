@@ -1,27 +1,62 @@
 #include "../include/Channel.hpp"
 
-void Channel::promoteToOperator(User user) {
-
-} //add to operator, remove from user
-
-void Channel::demoteFromOperator(User user){
-	
-} //add to user, remove from operator
-
-std::map<User> Channel::getOperators(){
-	
+void Channel::promoteToOperator(const std::string clientNickname) {
+    std::map<std::string, Client*>::iterator it = _clients.find(clientNickname);
+    if (it != _clients.end()) {
+        _operators[clientNickname] = it->second;
+        _clients.erase(it);
+    }
 }
 
-std::map<User> Channel::getNonOperators(){
-	
+void Channel::demoteFromOperator(const std::string clientNickname) {
+    std::map<std::string, Client*>::iterator it = _operators.find(clientNickname);
+    if (it != _operators.end()) {
+        _clients[clientNickname] = it->second;
+        _operators.erase(it);
+    }
 }
 
-Channel::Channel(void) : _number(), _topic("default"), _mode("standard"), _users(), _operators() {
-	
+std::map<std::string, Client*> Channel::getOperators() {
+    return this->_operators;
 }
 
-Channel::Channel(std::string name) {
-	
+std::map<std::string, Client*> Channel::getNonOperators() {
+    return this->_clients;
 }
 
-Channel::~Channel(void) {}
+void Channel::addClient(Client* client) {
+	_clients.insert(std::make_pair(client->getNickName(), client));
+}
+
+Channel::Channel(const char* name) : _name(name) {
+	_topic = "chat";
+	_mode = "default";
+	_clients.clear();
+	_operators.clear();
+}
+
+Channel::Channel(const char* name, std::string topic) : _name(name), _topic(topic) {
+	_clients.clear();
+	_operators.clear();
+}
+
+Channel::~Channel(void) {
+	_clients.clear();
+	_operators.clear();
+}
+
+// Function to list all users' nicknames
+void Channel::listUsers() const {
+	std::cout << "List of Users:\n";
+	for (std::map<std::string, Client*>::const_iterator it = _clients.begin(); it != _clients.end(); ++it) {
+		std::cout << it->second->getNickName() << std::endl;
+	}
+}
+
+// Function to list all operators' nicknames
+void Channel::listOperators() const {
+	std::cout << "List of Operators:\n";
+	for (std::map<std::string, Client*>::const_iterator it = _operators.begin(); it != _operators.end(); ++it) {
+		std::cout << it->second->getNickName() << std::endl;
+	}
+}

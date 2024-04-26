@@ -17,8 +17,8 @@ C++ = c++
 CFLAGS = -Wall -Werror -Wextra -std=c++98
 
 # ./src/Server.cpp ./src/Client.cpp 
-HEADER_FILES = ./include/includes.hpp ./include/Server.hpp ./include/Client.hpp ./include/error.hpp
-SOURCES      = ./src/main.cpp ./src/Server.cpp ./src/Client.cpp ./src/Oper.cpp
+HEADER_FILES = ./include/includes.hpp ./include/Server.hpp ./include/Client.hpp ./include/Oper.hpp ./include/Channel.hpp
+SOURCES      = ./src/main.cpp ./src/Server.cpp ./src/Client.cpp ./src/Oper.cpp ./src/Channel.cpp
 OBJ_DIR      = ./mandatory/obj
 OBJ_FILES    = $(SRC_FILES:%.c=$(OBJ_DIR)/%.o)
 INCLUDE =	-I ./include
