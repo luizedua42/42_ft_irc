@@ -96,9 +96,8 @@ void Server::cap(int clientFd) {
 	// send(clientFd, "\r\n", 2, 0);
 }
 void Server::join(std::vector<std::string> options, int clientFd) {
-	Client& user = Server::getClient(clientFd);
 	std::string channel = options[0];
-	std::cout << user.getNickName() << " Joining channel: " << channel << std::endl;
+	std::cout << " Joining channel: " << channel << std::endl;
 }
 
 void Server::privmsg(std::vector<std::string> options, int clientFd) {
