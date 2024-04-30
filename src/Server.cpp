@@ -8,6 +8,7 @@
 
 #include "../include/includes.hpp"
 #include "../include/error.hpp"
+#include "../include/Server.hpp"
 
 void Server::setPort(char *input) {
 	std::stringstream iss;
@@ -66,7 +67,7 @@ void Server::listenClient(int clientFD) {
 	}
 
 	buff[byte] = '\0';
-	_serverOper.selectOptions(buff);
+	Server::selectOptions(buff, clientFD);
 }
 
 void Server::setupSocket() {
@@ -149,13 +150,21 @@ void Server::closeFds() {
 		close(_sockfd);
 }
 
-
-
 bool Server::_signal = true;
 void Server::handleSig(int signum) {
 	(void)signum;
 	Server::_signal = false;
 }
+
+Client& Server::getClient(int clientFd) {
+	for(size_t i = 0; i < _clients.size(); i++) {
+		if (_clients[i].getClientFD() == clientFd) {
+			return _clients[i];
+		}
+	}
+	throw std::runtime_error(ERRMSG_CLIENT);
+}
+
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);
 // recv(newsockfd, buff, 100000, 0);

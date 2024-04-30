@@ -9,5 +9,5 @@
 # define ERRMSG_FCNTL "Error on fcntl"
 # define ERRMSG_ACCEPT "Error on accept"
 # define ERRMSG_LISTEN "Error on listen"
-
+# define ERRMSG_CLIENT "Error on client"
 #endif

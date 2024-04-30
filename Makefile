@@ -14,10 +14,10 @@ GREEN=\033[1;32m
 RED=\033[0;31m
 RESET=\033[0m
 C++ = c++
-CFLAGS = -Wall -Werror -Wextra -g3 -std=c++98
+CFLAGS = -Wall -Werror -Wextra -std=c++98
 
 # ./src/Server.cpp ./src/Client.cpp 
-HEADER_FILES = ./include/includes.hpp ./include/Server.hpp ./include/Client.hpp ./include/Oper.hpp
+HEADER_FILES = ./include/includes.hpp ./include/Server.hpp ./include/Client.hpp ./include/error.hpp
 SOURCES      = ./src/main.cpp ./src/Server.cpp ./src/Client.cpp ./src/Oper.cpp
 OBJ_DIR      = ./mandatory/obj
 OBJ_FILES    = $(SRC_FILES:%.c=$(OBJ_DIR)/%.o)

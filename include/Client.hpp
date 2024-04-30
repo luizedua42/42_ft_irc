@@ -10,7 +10,6 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 # include "includes.hpp"
-
 class Client {
 	
 	private:
