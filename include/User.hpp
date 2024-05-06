@@ -15,14 +15,14 @@ class Channel;
 class User {
 	
 	private:
-		int			_UserFD;
+		int			_userFD;
 		std::string	_realName;
 		std::string	_nickName;
-		std::string	_UserIP;
+		std::string	_userIP;
 
 	public:
 		//Getters and Setters
-		void setUserFD(int UserFD);
+		void setUserFD(int userFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
 		void setUserIP(char * UserIP);

@@ -166,8 +166,8 @@ User& Server::getUser(int UserFd) {
 }
 
 bool Server::channelExists(const std::string& channelName) const {
-    for (const auto& channel : _channels) {
-        if (channel.getName() == channelName) {
+    for (std::vector<Channel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it) {
+        if (it->getName() == channelName) {
             return true;
         }
     }
@@ -175,11 +175,17 @@ bool Server::channelExists(const std::string& channelName) const {
 }
 
 Channel* Server::getChannel(const std::string& channelName) {
-    for (auto& channel : _channels) {
-        if (channel.getName() == channelName) {
-            return &channel;
+    for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
+        if (it->getName() == channelName) {
+            return &(*it);
         }
     }
+	return NULL;
+}
+
+void Server::createChannel(const std::string channelName) {
+	Channel newChannel(channelName);
+	_channels.push_back(newChannel);
 }
 
 // std::string response = "CAP * LS :\r\n";

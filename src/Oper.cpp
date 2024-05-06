@@ -101,7 +101,7 @@ void Server::join(std::vector<std::string> options, int UserFd) {
 	bool isOperator = false;
 
 	if (!channelExists(channelName)) {
-		createChannel(const std::string &channelName);
+		createChannel(channelName);
 		isOperator = true;
 	}
 
@@ -117,9 +117,9 @@ void Server::join(std::vector<std::string> options, int UserFd) {
     }
 
 	User& user = Server::getUser(UserFd);
-	channel->addUser(user);
+	channel->addUser(&user);
 	if (isOperator) {
-		channel->promoteToOperator(user->getNickName());
+		channel->promoteToOperator(user.getNickName());
 	}
 	std::cout << " Joining channel: " << channelName << std::endl;
 }
