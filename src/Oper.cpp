@@ -7,6 +7,19 @@
 *========================**/
 
 #include "../include/includes.hpp"
+namespace mode {
+	void setOp(std::string channel);
+	void delOp(std::string channel);
+	void setTopic(std::string channel);
+	void delTopic(std::string channel);
+	void setInvite(std::string channel);
+	void delInvite(std::string channel);
+	void setKey(std::string channel);
+	void delKey(std::string channel);
+	void setLimit(std::string channel);
+	void delLimit(std::string channel);
+
+}
 
 std::vector<std::string> Server::parseOptions(std::string str) {
 	std::string word;
@@ -158,40 +171,39 @@ void Server::mode(std::vector<std::string> option, int clientFd) {
 	}
 	switch (i) {
 		case 0:
-			std::cout << "Removing invite only mode" << std::endl;
+			mode::delInvite(channel);
 			break;
 		case 1:
-			std::cout << "Setting invite only mode" << std::endl;
+			mode::setInvite(channel);
 			break;
 		case 2:
-			std::cout << "Removing topic protection mode" << std::endl;
+			mode::delTopic(channel);
 			break;
 		case 3:
-			std::cout << "Setting topic protection mode" << std::endl;
+			mode::setTopic(channel);
 			break;
 		case 4:
-			std::cout << "Removing key" << std::endl;
+			mode::delKey(channel);
 			break;
 		case 5:
-			std::cout << "Setting key" << std::endl;
+			mode::setKey(channel);
 			break;
 		case 6:
-			std::cout << "Removing operator status" << std::endl;
+			mode::delOp(channel);
 			break;
 		case 7:
-			std::cout << "Setting operator status" << std::endl;
+			mode::setOp(channel);
 			break;
 		case 8:
-			std::cout << "Removing user limit" << std::endl;
+			mode::delLimit(channel);
 			break;
 		case 9:
-			std::cout << "Setting user limit" << std::endl;
+			mode::setLimit(channel);
 			break;
 		default:
-			std::cerr << "Invalid mode: " << mode << std::endl;
+			std::cerr << "Invalid mode" << std::endl;
 			break;
 	}
-
 }
 
 void Server::topic(std::vector<std::string> option, int clientFd) {

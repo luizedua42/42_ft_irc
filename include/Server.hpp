@@ -10,7 +10,8 @@
 # define SERVER_HPP
 # include "includes.hpp"
 
-class Oper;
+class Client;
+
 class Server{
 	private:
 		int							_port;
