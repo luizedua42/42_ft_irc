@@ -7,7 +7,7 @@
 *========================**/
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
-# define MAX_CLIENTS 666
+# define MAX_UserS 666
 
 # include <iostream>
 # include <string>
@@ -30,7 +30,7 @@
 # include <map>
 # include <algorithm>
 # include "error.hpp"
-# include "Client.hpp"
+# include "User.hpp"
 # include "Channel.hpp"
 # include "Server.hpp"
 

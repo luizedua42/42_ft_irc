@@ -23,18 +23,18 @@ int main(int ac, char **av) {
 	std::cout << "Password: " << server.getPassword() << std::endl;
 	std::cout << "Server is running..." << std::endl;
     Channel channel("ChannelName");
-	Client user1("User1");
-	Client user2("User2");
-	Client user3("User3");
-	Client user4("User4");
-	Client user5("User5");
+	User user1("User1");
+	User user2("User2");
+	User user3("User3");
+	User user4("User4");
+	User user5("User5");
 
     // Add 5 users
-    channel.addClient(&user1);
-    channel.addClient(&user2);
-    channel.addClient(&user3);
-    channel.addClient(&user4);
-    channel.addClient(&user5);
+    channel.addUser(&user1);
+    channel.addUser(&user2);
+    channel.addUser(&user3);
+    channel.addUser(&user4);
+    channel.addUser(&user5);
 
     // Promote 3 users to operators
     channel.promoteToOperator("User1");

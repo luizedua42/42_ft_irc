@@ -1,38 +1,38 @@
 /**======================
 *            42sp
-* @file      : Client.hpp
+* @file      : User.hpp
 * @author    : luizedua
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 24/04/2024
 *========================**/
 
-#ifndef CLIENT_HPP
-# define CLIENT_HPP
+#ifndef User_HPP
+# define User_HPP
 # include "includes.hpp"
 
 class Channel;
 
-class Client {
+class User {
 	
 	private:
-		int			_clientFD;
+		int			_UserFD;
 		std::string	_realName;
 		std::string	_nickName;
-		std::string	_clientIP;
+		std::string	_UserIP;
 
 	public:
 		//Getters and Setters
-		void setClientFD(int clientFD);
+		void setUserFD(int UserFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
-		void setClientIP(char * clientIP);
+		void setUserIP(char * UserIP);
 		
-		int			getClientFD();
+		int			getUserFD();
 		std::string	getRealName();
 		std::string	getNickName();
-		std::string	getClientIP();
+		std::string	getUserIP();
 
-		Client(const char* nickname);
+		User(const char* nickname);
 };
 
 #endif

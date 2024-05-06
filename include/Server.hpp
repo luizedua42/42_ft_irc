@@ -17,14 +17,14 @@ class Server {
 		static bool					_signal;
 		std::string					_password;
 		std::vector<Channel>		_channels;
-		std::vector<Client>			_clients;
+		std::vector<User>			_Users;
 		std::vector<struct pollfd>	_fds;
 
 	public:
 		//Methods
-		void						listenClient(int clientFD);
-		void						acceptNewClient(const char* nickName);
-		void						clearClients(int clientFd);
+		void						listenUser(int UserFD);
+		void						acceptNewUser(const char* nickName);
+		void						clearUsers(int UserFd);
 		void						closeFds();
 		static void					handleSig(int signum);
 		
@@ -37,15 +37,15 @@ class Server {
 		void			setPort(char *input);
 		void			setPassword(char *input);
 		std::string		getPassword();
-		Client&	getClient(int clientFd);
-		std::vector<Client>	getClientVector();
+		User&	getUser(int UserFd);
+		std::vector<User>	getUserVector();
 
 		//Commands
 		
-		void						selectOptions(std::string buff, int clientFd);
+		void						selectOptions(std::string buff, int UserFd);
 		std::vector<std::string>	parseOptions(std::string buff);
 
-		void		cap(int clientFd);
+		void		cap(int UserFd);
 		void		join(std::vector<std::string>, int fd);
 		void		privmsg(std::vector<std::string>, int fd);
 		void		quit(std::vector<std::string>, int fd);

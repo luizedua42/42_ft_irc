@@ -1,6 +1,6 @@
 /**======================
 *            42sp
-* @file      : Client.cpp
+* @file      : User.cpp
 * @author    : luizedua
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 24/04/2024
@@ -11,36 +11,36 @@
 
 //Getters and Setters
 
-void Client::setClientFD(int clientFD) {
-	_clientFD = clientFD;
+void User::setUserFD(int userFD) {
+	_userFD = userFD;
 }
 
-void Client::setRealName(std::string realName) {
+void User::setRealName(std::string realName) {
 	_realName = realName;
 }
 
-void Client::setNickName(std::string nickName) {
+void User::setNickName(std::string nickName) {
 	_nickName = nickName;
 }
 
-void Client::setClientIP(char *clientIP) {
-	_clientIP = clientIP;
+void User::setUserIP(char *userIP) {
+	_userIP = userIP;
 }
 
-int Client::getClientFD() {
-	return _clientFD;
+int User::getUserFD() {
+	return _userFD;
 }
 
-std::string Client::getRealName() {
+std::string User::getRealName() {
 	return _realName;
 }
 
-std::string Client::getNickName() {
+std::string User::getNickName() {
 	return _nickName;
 }
 
-std::string Client::getClientIP() {
-	return _clientIP;
+std::string User::getUserIP() {
+	return _userIP;
 }
 
-Client::Client(const char* nickName) : _nickName(nickName) {}
+User::User(const char* nickName) : _nickName(nickName) {}

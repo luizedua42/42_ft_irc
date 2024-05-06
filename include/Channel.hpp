@@ -4,24 +4,24 @@
 
 class Channel {
 	private:
-		int					_number;
 		std::string			_name;
 		std::string			_topic;
-		std::string 		_mode; //enum?
-		std::map<std::string, Client*> _clients; // Map client name to Client reference
-    	std::map<std::string, Client*> _operators; // Map client name to Client reference
+		std::string 		_mode;
+		std::map<std::string, User*> _Users;
+    	std::map<std::string, User*> _operators;
 
 	public:
-		void 							addClient(Client* client);
-		std::map<std::string, Client*>	getOperators();
-		std::map<std::string, Client*>	getNonOperators();
-		void							promoteToOperator(std::string clientNickname); //add to operator, remove from user
-		void							demoteFromOperator(std::string clientNickname); //add to user, remove from operator
+		void 							addUser(User* user);
+		std::map<std::string, User*>	getOperators() const;
+		std::map<std::string, User*>	getNonOperators() const;
+		std::string 					getName() const;
+		void 							setName(const std::string& name);
+		void							promoteToOperator(std::string userNickname); //add to operator, remove from user
+		void							demoteFromOperator(std::string userNickname); //add to user, remove from operator
 		void 							listUsers() const;
 		void 							listOperators() const;
 
 		Channel(const char* name);
-		Channel(const char* name, std::string topic);
 		~Channel();
 };
 
