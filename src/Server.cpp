@@ -55,16 +55,16 @@ void Server::setupServer() {
 	closeFds();
 }
 
-void Server::listenClient(int clientFD) {
-	Client& user = getClient(clientFD);
+void Server::listenUser(int UserFD) {
+	User& user = getUser(UserFD);
 	char buff[513];
 	bzero(buff, 513);
 
 	ssize_t byte = recv(UserFD, buff, 513, 0);
 	if(byte <= 0){
 		user.clientBuff.clear();
-		Server::clearClients(clientFD);
-		close(clientFD);
+		Server::clearUsers(UserFD);
+		close(UserFD);
 		return;
 	}
 	if(user.clientBuff.empty()) {
@@ -75,7 +75,7 @@ void Server::listenClient(int clientFD) {
 	if(user.clientBuff.find("\n") == std::string::npos) {
 		return;
 	}
-	Server::selectOptions(user.clientBuff, clientFD);
+	Server::selectOptions(user.clientBuff, UserFD);
 	user.clientBuff.clear();
 }
 
@@ -189,9 +189,10 @@ Channel* Server::getChannel(const std::string& channelName) {
             return &channel;
         }
     }
+	return nullptr;
 }
 
-// std::string response = "CAP * LS :\r\n";
-// send(newsockfd, response.c_str(), response.size(), 0);
-// recv(newsockfd, buff, 100000, 0);
-// std::cout << buff;
+void Server::createChannel(std::string channelName) {
+	Channel newChannel(channelName.c_str());
+	_channels.push_back(newChannel);
+}

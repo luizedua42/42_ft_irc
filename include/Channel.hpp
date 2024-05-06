@@ -1,12 +1,16 @@
+#pragma once
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 # include "includes.hpp"
+
+class User;
 
 class Channel {
 	private:
 		std::string			_name;
 		std::string			_topic;
 		std::string 		_mode;
+		std::string 		_password;
 		std::map<std::string, User*> _Users;
     	std::map<std::string, User*> _operators;
 
@@ -20,6 +24,10 @@ class Channel {
 		void							demoteFromOperator(std::string userNickname); //add to user, remove from operator
 		void 							listUsers() const;
 		void 							listOperators() const;
+		std::string						getMode() const;
+		void							setMode(const std::string& mode);
+		std::string						getPassword() const;
+		void 							setPassword(std::string& password);
 
 		Channel(const char* name);
 		~Channel();

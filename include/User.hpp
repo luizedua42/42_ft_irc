@@ -5,12 +5,12 @@
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 24/04/2024
 *========================**/
-
+#pragma once
 #ifndef User_HPP
 # define User_HPP
 # include "includes.hpp"
 
-class Channel;
+// class Channel;
 
 class User {
 	

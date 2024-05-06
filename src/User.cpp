@@ -12,7 +12,7 @@
 //Getters and Setters
 
 void User::setUserFD(int userFD) {
-	_userFD = userFD;
+	_UserFD = userFD;
 }
 
 void User::setRealName(std::string realName) {
@@ -24,11 +24,11 @@ void User::setNickName(std::string nickName) {
 }
 
 void User::setUserIP(char *userIP) {
-	_userIP = userIP;
+	_UserIP = userIP;
 }
 
 int User::getUserFD() {
-	return _userFD;
+	return _UserFD;
 }
 
 std::string User::getRealName() {
@@ -40,7 +40,7 @@ std::string User::getNickName() {
 }
 
 std::string User::getUserIP() {
-	return _userIP;
+	return _UserIP;
 }
 
 User::User(const char* nickName) : _nickName(nickName) {}

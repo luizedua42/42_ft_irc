@@ -5,12 +5,13 @@
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 17/04/2024
 *========================**/
-
+#pragma once
 #ifndef SERVER_HPP
 # define SERVER_HPP
 # include "includes.hpp"
 
-class Client;
+class User;
+class Channel;
 
 class Server{
 	private:
@@ -35,15 +36,17 @@ class Server{
 		void		setupServer();
 		
 		//Getters
-		int				getPort();
-		void			setPort(char *input);
-		void			setPassword(char *input);
-		std::string		getPassword();
-		User&	getUser(int UserFd);
+		bool				channelExists(const std::string& channelName) const;
+		Channel *			getChannel(const std::string& channelName);
+		int					getPort();
+		void				setPort(char *input);
+		void				setPassword(char *input);
+		std::string			getPassword();
+		User&				getUser(int UserFd);
 		std::vector<User>	getUserVector();
 
 		//Commands
-		
+		void						createChannel(std::string channelName);
 		void						selectOptions(std::string buff, int UserFd);
 		std::vector<std::string>	parseOptions(std::string buff);
 

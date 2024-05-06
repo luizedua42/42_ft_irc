@@ -63,3 +63,20 @@ void Channel::listOperators() const {
 		std::cout << it->second->getNickName() << std::endl;
 	}
 }
+
+std::string Channel::getMode() const {
+	return _mode;
+}
+
+void Channel::setMode(const std::string& mode) {
+	_mode = mode;
+}
+
+std::string Channel::getPassword() const {
+	return _password;
+}
+
+void Channel::setPassword(std::string& password) {
+	_password = password;
+}
+
