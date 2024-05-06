@@ -25,9 +25,9 @@ class Server{
 
 	public:
 		//Methods
-		void						listenUser(int UserFD);
+		void						listenUser(int userFD);
 		void						acceptNewUser(const char* nickName);
-		void						clearUsers(int UserFd);
+		void						clearUsers(int userFD);
 		void						closeFds();
 		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
@@ -42,16 +42,16 @@ class Server{
 		void				setPort(char *input);
 		void				setPassword(char *input);
 		std::string			getPassword();
-		User&				getUser(int UserFd);
+		User&				getUser(int userFD);
 		std::vector<User>	getUserVector();
 
 		//Commands
 		
 		void						createChannel(std::string channelName);
-		void						selectOptions(std::string buff, int UserFd);
+		void						selectOptions(std::string buff, int userFD);
 		std::vector<std::string>	parseOptions(std::string buff);
 
-		void		cap(int UserFd);
+		void		cap(int userFD);
 		void		join(std::vector<std::string>, int fd);
 		void		privmsg(std::vector<std::string>, int fd);
 		void		quit(std::vector<std::string>, int fd);

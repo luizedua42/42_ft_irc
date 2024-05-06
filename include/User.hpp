@@ -15,23 +15,23 @@
 class User {
 	
 	private:
-		int			_UserFD;
+		int			_userFD;
 		std::string	_realName;
 		std::string	_nickName;
-		std::string	_UserIP;
+		std::string	_userIP;
 
 	public:
 		//Getters and Setters
 		std::string	clientBuff;
-		void setUserFD(int userFD);
+		void setuserFD(int userFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
-		void setUserIP(char * UserIP);
+		void setuserIP(char * userIP);
 		
-		int			getUserFD();
+		int			getuserFD();
 		std::string	getRealName();
 		std::string	getNickName();
-		std::string	getUserIP();
+		std::string	getuserIP();
 
 		User(const char* nickname);
 };

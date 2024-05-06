@@ -55,16 +55,16 @@ void Server::setupServer() {
 	closeFds();
 }
 
-void Server::listenUser(int UserFD) {
-	User& user = getUser(UserFD);
+void Server::listenUser(int userFD) {
+	User& user = getUser(userFD);
 	char buff[513];
 	bzero(buff, 513);
 
-	ssize_t byte = recv(UserFD, buff, 513, 0);
+	ssize_t byte = recv(userFD, buff, 513, 0);
 	if(byte <= 0){
 		user.clientBuff.clear();
-		Server::clearUsers(UserFD);
-		close(UserFD);
+		Server::clearUsers(userFD);
+		close(userFD);
 		return;
 	}
 	if(user.clientBuff.empty()) {
@@ -75,7 +75,7 @@ void Server::listenUser(int UserFD) {
 	if(user.clientBuff.find("\n") == std::string::npos) {
 		return;
 	}
-	Server::selectOptions(user.clientBuff, UserFD);
+	Server::selectOptions(user.clientBuff, userFD);
 	user.clientBuff.clear();
 }
 
@@ -130,21 +130,21 @@ void Server::acceptNewUser(const char* nickName) {
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 	
-	User.setUserFD(newsockfd);
-	User.setUserIP(inet_ntoa(cliAdd.sin_addr));
+	User.setuserFD(newsockfd);
+	User.setuserIP(inet_ntoa(cliAdd.sin_addr));
 	_Users.push_back(User);
 	_fds.push_back(newPoll);
 }
 
-void Server::clearUsers(int UserFd) {
+void Server::clearUsers(int userFD) {
 	for(size_t i = 0; i < _fds.size(); i++){
-		if (_fds[i].fd == UserFd) {
+		if (_fds[i].fd == userFD) {
 			_fds.erase(_fds.begin() + i); 
 			break;
 		}
  }
 	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getUserFD() == UserFd) {
+		if (_Users[i].getuserFD() == userFD) {
 			_Users.erase(_Users.begin() + i);
 			break;
 		}
@@ -153,7 +153,7 @@ void Server::clearUsers(int UserFd) {
 
 void Server::closeFds() {
 	for(size_t i = 0; i < _Users.size(); i++) {
-			close(_Users[i].getUserFD());
+			close(_Users[i].getuserFD());
 	}
 	if(_sockfd != -1)
 		close(_sockfd);
@@ -165,9 +165,9 @@ void Server::handleSig(int signum) {
 	Server::_signal = false;
 }
 
-User& Server::getUser(int UserFd) {
+User& Server::getUser(int userFD) {
 	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getUserFD() == UserFd) {
+		if (_Users[i].getuserFD() == userFD) {
 			return _Users[i];
 		}
 	}

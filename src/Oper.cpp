@@ -11,31 +11,31 @@ namespace mode {
 	void setOp(std::string channel) {
 		(void)channel;
 	}
-	void delOp(std::string channel) {
+	void unsetOp(std::string channel) {
 		(void)channel;
 	}
 	void setTopic(std::string channel) {
 		(void)channel;
 	}
-	void delTopic(std::string channel) {
+	void unsetTopic(std::string channel) {
 		(void)channel;
 	}
 	void setInvite(std::string channel) {
 		(void)channel;
 	}
-	void delInvite(std::string channel) {
+	void unsetInvite(std::string channel) {
 		(void)channel;
 	}
 	void setKey(std::string channel) {
 		(void)channel;
 	}
-	void delKey(std::string channel) {
+	void unsetKey(std::string channel) {
 		(void)channel;
 	}
 	void setLimit(std::string channel) {
 		(void)channel;
 	}
-	void delLimit(std::string channel) {
+	void unsetLimit(std::string channel) {
 		(void)channel;
 	}
 
@@ -64,7 +64,7 @@ std::vector<std::string> splitBuff(std::string buff) {
 	return splittedBuff;
 }
 
-void Server::selectOptions(std::string buff, int UserFd) {
+void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
 	
 	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "OPER", "MODE", "TOPIC", "INVITE", "KICK"};
@@ -82,37 +82,37 @@ void Server::selectOptions(std::string buff, int UserFd) {
 		std::cout << "option: " << option << std::endl;
 		switch (i) {
 			case 0:
-				cap(UserFd);
+				cap(userFD);
 				break;
 			case 1:
-				user(parseOptions(parsedOptions), UserFd);
+				user(parseOptions(parsedOptions), userFD);
 				break;
 			case 2:
-				nick(parseOptions(parsedOptions), UserFd);
+				nick(parseOptions(parsedOptions), userFD);
 				break;
 			case 3:
-				join(parseOptions(parsedOptions), UserFd);
+				join(parseOptions(parsedOptions), userFD);
 				break;
 			case 4:
-				privmsg(parseOptions(parsedOptions), UserFd);
+				privmsg(parseOptions(parsedOptions), userFD);
 				break;
 			case 5:
-				quit(parseOptions(parsedOptions), UserFd);
+				quit(parseOptions(parsedOptions), userFD);
 				break;
 			case 6:
-				oper(parseOptions(parsedOptions), UserFd);
+				oper(parseOptions(parsedOptions), userFD);
 				break;
 			case 7:
-				mode(parseOptions(parsedOptions), UserFd);
+				mode(parseOptions(parsedOptions), userFD);
 				break;
 			case 8:
-				topic(parseOptions(parsedOptions), UserFd);
+				topic(parseOptions(parsedOptions), userFD);
 				break;
 			case 9:
-				invite(parseOptions(parsedOptions), UserFd);
+				invite(parseOptions(parsedOptions), userFD);
 				break;
 			case 10:
-				kick(parseOptions(parsedOptions), UserFd);
+				kick(parseOptions(parsedOptions), userFD);
 				break;
 			default:
 				std::cerr << "Invalid request: " << option << std::endl;
@@ -123,14 +123,14 @@ void Server::selectOptions(std::string buff, int UserFd) {
 		// buff.clear();
 }
 
-void Server::cap(int UserFd) {
-	(void)UserFd;
+void Server::cap(int userFD) {
+	(void)userFD;
 	
 	std::cout << "CAP" << std::endl;
-	// send(UserFd, "\r\n", 2, 0);
+	// send(userFD, "\r\n", 2, 0);
 }
 
-void Server::join(std::vector<std::string> options, int UserFd) {
+void Server::join(std::vector<std::string> options, int userFD) {
 	std::string channelName = options.front().substr(1);
 	bool isOperator = false;
 
@@ -150,7 +150,7 @@ void Server::join(std::vector<std::string> options, int UserFd) {
         return;
     }
 
-	User& user = Server::getUser(UserFd);
+	User& user = Server::getUser(userFD);
 	channel->addUser(&user);
 	if (isOperator) {
 		channel->promoteToOperator(user.getNickName());
@@ -158,24 +158,24 @@ void Server::join(std::vector<std::string> options, int UserFd) {
 	
 	std::cout << " Joining channel: " << channelName << std::endl;
 	std::string response = ":" + user.getNickName() + " JOIN " + channelName + "\r\n";
-	send(UserFd, response.c_str(), response.size(), 0);
+	send(userFD, response.c_str(), response.size(), 0);
 }
 
-void Server::privmsg(std::vector<std::string> options, int UserFd) {
+void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::cout << "Sending message to channel: " << options[0] << " - " << std::endl;\
-	(void)UserFd;
+	(void)userFD;
 
 }
 
-void Server::quit(std::vector<std::string> options, int UserFd) {
+void Server::quit(std::vector<std::string> options, int userFD) {
 	std::string channel= options[0];
-	User& test = Server::getUser(UserFd);
+	User& test = Server::getUser(userFD);
 	
 	std::cout << test.getNickName() <<":" <<"Quittin" << channel << std::endl;
 }
 
-void Server::nick(std::vector<std::string> option, int UserFd) {
-	User& user = Server::getUser(UserFd);
+void Server::nick(std::vector<std::string> option, int userFD) {
+	User& user = Server::getUser(userFD);
 
 	std::string nickname = option[0].substr(0, option[0].find('\r'));
 
@@ -183,11 +183,11 @@ void Server::nick(std::vector<std::string> option, int UserFd) {
 
 	std::string response;
 	response = ":ft.irc 001 " + user.getNickName() + " :Welcome to the Internet Relay Chat " + user.getNickName() + "!" + user.getRealName() + "@*\r\n";
-	send(UserFd, response.c_str(), response.size(), 0);
+	send(userFD, response.c_str(), response.size(), 0);
 }
 
-void Server::user(std::vector<std::string> option, int UserFd) {
-	User& user = Server::getUser(UserFd);
+void Server::user(std::vector<std::string> option, int userFD) {
+	User& user = Server::getUser(userFD);
 
 	std::string username = option[0].substr(0, option[0].find(' '));
 
@@ -195,8 +195,8 @@ void Server::user(std::vector<std::string> option, int UserFd) {
 }
 
 
-void Server::oper(std::vector<std::string> option, int UserFd) {
-	(void)UserFd;
+void Server::oper(std::vector<std::string> option, int userFD) {
+	(void)userFD;
 	std::cout << "Opering user: " << option[0] << std::endl;
 }
 
@@ -218,31 +218,31 @@ void Server::mode(std::vector<std::string> option, int clientFd) {
 	}
 	switch (i) {
 		case 0:
-			mode::delInvite(channel);
+			mode::unsetInvite(channel);
 			break;
 		case 1:
 			mode::setInvite(channel);
 			break;
 		case 2:
-			mode::delTopic(channel);
+			mode::unsetTopic(channel);
 			break;
 		case 3:
 			mode::setTopic(channel);
 			break;
 		case 4:
-			mode::delKey(channel);
+			mode::unsetKey(channel);
 			break;
 		case 5:
 			mode::setKey(channel);
 			break;
 		case 6:
-			mode::delOp(channel);
+			mode::unsetOp(channel);
 			break;
 		case 7:
 			mode::setOp(channel);
 			break;
 		case 8:
-			mode::delLimit(channel);
+			mode::unsetLimit(channel);
 			break;
 		case 9:
 			mode::setLimit(channel);
@@ -266,14 +266,14 @@ void Server::topic(std::vector<std::string> option, int clientFd) {
 	}
 }
 
-void Server::invite(std::vector<std::string> option, int UserFd) {
-	(void)UserFd;
+void Server::invite(std::vector<std::string> option, int userFD) {
+	(void)userFD;
 	std::cout << "Inviting user to channel: " << option[0] << std::endl;
 }
 
-void Server::kick(std::vector<std::string> option, int UserFd) {
+void Server::kick(std::vector<std::string> option, int userFD) {
 	(void)option;
-	(void)UserFd;
+	(void)userFD;
 //	std::string channel = option[0].substr(0, option[0].find('\r'));
 //	std::string user = option[1];
 // std::cout << "Kicking " << user << " from channel: " << channel << std::endl;
