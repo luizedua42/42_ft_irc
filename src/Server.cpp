@@ -45,9 +45,9 @@ void Server::setupServer() {
 		for(size_t i = 0 ; i < _fds.size(); i++) {
 			if(_fds[i].revents & POLLIN) {
 				if(_fds[i].fd == _sockfd)
-					acceptNewClient();
+					acceptNewUser("User1");
 				else {
-					listenClient(_fds[i].fd);
+					listenUser(_fds[i].fd);
 				}
 			}
 		}
@@ -55,19 +55,19 @@ void Server::setupServer() {
 	closeFds();
 }
 
-void Server::listenClient(int clientFD) {
+void Server::listenUser(int UserFD) {
 	char buff[513];
 	bzero(buff, 513);
 
-	ssize_t byte = recv(clientFD, buff, 513, 0);
+	ssize_t byte = recv(UserFD, buff, 513, 0);
 	if(byte <= 0){
-		Server::clearClients(clientFD);
-		close(clientFD);
+		Server::clearUsers(UserFD);
+		close(UserFD);
 		return;
 	}
 
 	buff[byte] = '\0';
-	Server::selectOptions(buff, clientFD);
+	Server::selectOptions(buff, UserFD);
 }
 
 void Server::setupSocket() {
@@ -103,8 +103,8 @@ void Server::setupSocket() {
 	_fds.push_back(newPoll);
 }
 
-void Server::acceptNewClient() {
-	Client client;
+void Server::acceptNewUser(const char* nickName) {
+	User User(nickName);
 	struct sockaddr_in cliAdd;
 	struct pollfd newPoll;
 	socklen_t clilen = sizeof(cliAdd);
@@ -121,30 +121,30 @@ void Server::acceptNewClient() {
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 	
-	client.setClientFD(newsockfd);
-	client.setClientIP(inet_ntoa(cliAdd.sin_addr));
-	_clients.push_back(client);
+	User.setUserFD(newsockfd);
+	User.setUserIP(inet_ntoa(cliAdd.sin_addr));
+	_Users.push_back(User);
 	_fds.push_back(newPoll);
 }
 
-void Server::clearClients(int clientFd) {
+void Server::clearUsers(int UserFd) {
 	for(size_t i = 0; i < _fds.size(); i++){
-		if (_fds[i].fd == clientFd) {
+		if (_fds[i].fd == UserFd) {
 			_fds.erase(_fds.begin() + i); 
 			break;
 		}
  }
-	for(size_t i = 0; i < _clients.size(); i++) {
-		if (_clients[i].getClientFD() == clientFd) {
-			_clients.erase(_clients.begin() + i);
+	for(size_t i = 0; i < _Users.size(); i++) {
+		if (_Users[i].getUserFD() == UserFd) {
+			_Users.erase(_Users.begin() + i);
 			break;
 		}
 	}
 }
 
 void Server::closeFds() {
-	for(size_t i = 0; i < _clients.size(); i++) {
-			close(_clients[i].getClientFD());
+	for(size_t i = 0; i < _Users.size(); i++) {
+			close(_Users[i].getUserFD());
 	}
 	if(_sockfd != -1)
 		close(_sockfd);
@@ -156,13 +156,30 @@ void Server::handleSig(int signum) {
 	Server::_signal = false;
 }
 
-Client& Server::getClient(int clientFd) {
-	for(size_t i = 0; i < _clients.size(); i++) {
-		if (_clients[i].getClientFD() == clientFd) {
-			return _clients[i];
+User& Server::getUser(int UserFd) {
+	for(size_t i = 0; i < _Users.size(); i++) {
+		if (_Users[i].getUserFD() == UserFd) {
+			return _Users[i];
 		}
 	}
-	throw std::runtime_error(ERRMSG_CLIENT);
+	throw std::runtime_error(ERRMSG_User);
+}
+
+bool Server::channelExists(const std::string& channelName) const {
+    for (const auto& channel : _channels) {
+        if (channel.getName() == channelName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Channel* Server::getChannel(const std::string& channelName) {
+    for (auto& channel : _channels) {
+        if (channel.getName() == channelName) {
+            return &channel;
+        }
+    }
 }
 
 // std::string response = "CAP * LS :\r\n";
