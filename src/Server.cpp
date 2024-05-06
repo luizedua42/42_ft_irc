@@ -175,8 +175,8 @@ User& Server::getUser(int UserFd) {
 }
 
 bool Server::channelExists(const std::string& channelName) const {
-    for (const auto& channel : _channels) {
-        if (channel.getName() == channelName) {
+    for (size_t i = 0; i < _channels.size(); i++) {
+        if (_channels[i].getName() == channelName) {
             return true;
         }
     }
@@ -184,12 +184,12 @@ bool Server::channelExists(const std::string& channelName) const {
 }
 
 Channel* Server::getChannel(const std::string& channelName) {
-    for (auto& channel : _channels) {
-        if (channel.getName() == channelName) {
-            return &channel;
+    for (size_t i = 0; i < _channels.size(); i++) {
+        if (_channels[i].getName() == channelName) {
+            return &_channels[i];
         }
     }
-	return nullptr;
+    return NULL;
 }
 
 void Server::createChannel(std::string channelName) {
