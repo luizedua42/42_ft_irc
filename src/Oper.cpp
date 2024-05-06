@@ -96,27 +96,6 @@ void Server::cap(int UserFd) {
 	// send(UserFd, "\r\n", 2, 0);
 }
 
-void Channel::join(const std::vector<std::string>& channelsWithPasswords) {
-    for (const auto& channelInfo : channelsWithPasswords) {
-        std::istringstream iss(channelInfo);
-        std::string channel, password;
-        std::getline(iss, channel, ',');
-        std::getline(iss, password, ',');
-
-        // Join logic goes here
-        // You need to check if the user can join the channel based on conditions mentioned in RFC 1459
-        // For simplicity, let's assume any user can join any channel without a password for now
-        // You'll need to implement the actual logic to check permissions and passwords
-
-        // For demonstration purposes, let's print the channels being joined
-        std::cout << "Joining channel: " << channel;
-        if (!password.empty()) {
-            std::cout << " with password: " << password;
-        }
-        std::cout << std::endl;
-    }
-}
-
 void Server::join(std::vector<std::string> options, int UserFd) {
 	std::string channelName = options.front().substr(1);
 	bool isOperator = false;
