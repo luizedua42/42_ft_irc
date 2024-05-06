@@ -26,6 +26,7 @@ class Server {
 		void						acceptNewUser(const char* nickName);
 		void						clearUsers(int UserFd);
 		void						closeFds();
+		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
 		
 		//Setup
@@ -34,6 +35,7 @@ class Server {
 		
 		//Getters
 		int				getPort();
+		Channel*		getChannel(const std::string& channelName);
 		void			setPort(char *input);
 		void			setPassword(char *input);
 		std::string		getPassword();
@@ -42,6 +44,7 @@ class Server {
 
 		//Commands
 		
+		void						createChannel(std::string channelName);
 		void						selectOptions(std::string buff, int UserFd);
 		std::vector<std::string>	parseOptions(std::string buff);
 
