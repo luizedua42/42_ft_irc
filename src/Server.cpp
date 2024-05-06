@@ -56,18 +56,27 @@ void Server::setupServer() {
 }
 
 void Server::listenClient(int clientFD) {
+	Client& user = getClient(clientFD);
 	char buff[513];
 	bzero(buff, 513);
 
 	ssize_t byte = recv(clientFD, buff, 513, 0);
 	if(byte <= 0){
+		user.clientBuff.clear();
 		Server::clearClients(clientFD);
 		close(clientFD);
 		return;
 	}
-
-	buff[byte] = '\0';
-	Server::selectOptions(buff, clientFD);
+	if(user.clientBuff.empty()) {
+		user.clientBuff = buff;
+	}
+	else
+		user.clientBuff.append(buff);
+	if(user.clientBuff.find("\n") == std::string::npos) {
+		return;
+	}
+	Server::selectOptions(user.clientBuff, clientFD);
+	user.clientBuff.clear();
 }
 
 void Server::setupSocket() {

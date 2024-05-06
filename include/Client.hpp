@@ -20,6 +20,7 @@ class Client {
 
 	public:
 		//Getters and Setters
+		std::string	clientBuff;
 		void setClientFD(int clientFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);

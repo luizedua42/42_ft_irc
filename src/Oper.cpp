@@ -8,16 +8,36 @@
 
 #include "../include/includes.hpp"
 namespace mode {
-	void setOp(std::string channel);
-	void delOp(std::string channel);
-	void setTopic(std::string channel);
-	void delTopic(std::string channel);
-	void setInvite(std::string channel);
-	void delInvite(std::string channel);
-	void setKey(std::string channel);
-	void delKey(std::string channel);
-	void setLimit(std::string channel);
-	void delLimit(std::string channel);
+	void setOp(std::string channel) {
+		(void)channel;
+	}
+	void delOp(std::string channel) {
+		(void)channel;
+	}
+	void setTopic(std::string channel) {
+		(void)channel;
+	}
+	void delTopic(std::string channel) {
+		(void)channel;
+	}
+	void setInvite(std::string channel) {
+		(void)channel;
+	}
+	void delInvite(std::string channel) {
+		(void)channel;
+	}
+	void setKey(std::string channel) {
+		(void)channel;
+	}
+	void delKey(std::string channel) {
+		(void)channel;
+	}
+	void setLimit(std::string channel) {
+		(void)channel;
+	}
+	void delLimit(std::string channel) {
+		(void)channel;
+	}
 
 }
 
@@ -100,6 +120,7 @@ void Server::selectOptions(std::string buff, int clientFd) {
 		}
 		splittedBuff.erase(splittedBuff.begin());
 		} while (!splittedBuff.empty());
+		// buff.clear();
 }
 
 void Server::cap(int clientFd) {
@@ -226,7 +247,8 @@ void Server::invite(std::vector<std::string> option, int clientFd) {
 
 void Server::kick(std::vector<std::string> option, int clientFd) {
 	(void)clientFd;
-	std::string channel = option[0];
-	std::string target = option[1];
+	(void)option;
+	// std::string channel = option[0];
+	// std::string target = option[1];
 
 }
