@@ -28,6 +28,14 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
+std::string Channel::getMode() const {
+	return this->_mode;
+}
+
+std::string Channel::getPassword() const {
+	return this->_password;
+}
+
 void Channel::setName(const std::string& name) {
 	this->_name = name;
 }
@@ -36,9 +44,10 @@ void Channel::addUser(User* User) {
 	_Users.insert(std::make_pair(User->getNickName(), User));
 }
 
-Channel::Channel(const char* name) : _name(name) {
+Channel::Channel(const std::string& name) : _name(name) {
 	_topic = "chat";
 	_mode = "default";
+	_password = "";
 	_Users.clear();
 	_operators.clear();
 }
@@ -64,16 +73,8 @@ void Channel::listOperators() const {
 	}
 }
 
-std::string Channel::getMode() const {
-	return _mode;
-}
-
 void Channel::setMode(const std::string& mode) {
 	_mode = mode;
-}
-
-std::string Channel::getPassword() const {
-	return _password;
 }
 
 void Channel::setPassword(std::string& password) {

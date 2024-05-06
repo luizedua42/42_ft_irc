@@ -175,8 +175,8 @@ User& Server::getUser(int UserFd) {
 }
 
 bool Server::channelExists(const std::string& channelName) const {
-    for (size_t i = 0; i < _channels.size(); i++) {
-        if (_channels[i].getName() == channelName) {
+    for (std::vector<Channel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it) {
+        if (it->getName() == channelName) {
             return true;
         }
     }
@@ -184,15 +184,20 @@ bool Server::channelExists(const std::string& channelName) const {
 }
 
 Channel* Server::getChannel(const std::string& channelName) {
-    for (size_t i = 0; i < _channels.size(); i++) {
-        if (_channels[i].getName() == channelName) {
-            return &_channels[i];
+    for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
+        if (it->getName() == channelName) {
+            return &(*it);
         }
     }
-    return NULL;
+	return NULL;
 }
 
-void Server::createChannel(std::string channelName) {
-	Channel newChannel(channelName.c_str());
+void Server::createChannel(const std::string channelName) {
+	Channel newChannel(channelName);
 	_channels.push_back(newChannel);
 }
+
+// std::string response = "CAP * LS :\r\n";
+// send(newsockfd, response.c_str(), response.size(), 0);
+// recv(newsockfd, buff, 100000, 0);
+// std::cout << buff;
