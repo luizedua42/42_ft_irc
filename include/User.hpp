@@ -23,7 +23,7 @@ class User {
 	public:
 		//Getters and Setters
 		std::string	clientBuff;
-		void setUserFD(int UserFD);
+		void setUserFD(int userFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
 		void setUserIP(char * UserIP);
