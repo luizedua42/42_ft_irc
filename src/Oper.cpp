@@ -155,7 +155,10 @@ void Server::join(std::vector<std::string> options, int UserFd) {
 	if (isOperator) {
 		channel->promoteToOperator(user.getNickName());
 	}
+	
 	std::cout << " Joining channel: " << channelName << std::endl;
+	std::string response = ":" + user.getNickName() + " JOIN " + channelName + "\r\n";
+	send(UserFd, response.c_str(), response.size(), 0);
 }
 
 void Server::privmsg(std::vector<std::string> options, int UserFd) {
