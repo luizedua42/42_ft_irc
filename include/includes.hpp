@@ -7,7 +7,7 @@
 *========================**/
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
-# define MAX_UserS 666
+# define MAX_USERS 666
 
 # include <iostream>
 # include <string>
