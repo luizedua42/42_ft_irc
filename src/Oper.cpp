@@ -96,6 +96,7 @@ void Server::cap(int clientFd) {
 	// send(clientFd, "\r\n", 2, 0);
 }
 void Server::join(std::vector<std::string> options, int clientFd) {
+	(void)clientFd;
 	std::string channel = options[0];
 	std::cout << " Joining channel: " << channel << std::endl;
 }
@@ -130,7 +131,7 @@ void Server::user(std::vector<std::string> option, int clientFd) {
 
 	std::string username = option[0].substr(0, option[0].find(' '));
 
-	user.setNickName(username);
+	user.setRealName(username);
 }
 
 
@@ -140,16 +141,70 @@ void Server::oper(std::vector<std::string> option, int clientFd) {
 }
 
 void Server::mode(std::vector<std::string> option, int clientFd) {
-	std::string channel = option[0];
-	std::string mode = option[1];
+	if(option.size() < 3) {
+		std::cerr << "Invalid number of arguments" << std::endl;
+		return;
+	}
 	(void)clientFd;
+	int i = 0;
+	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
+	std::string channel = option[0];
+	std::string mode = option[1].substr(0, option[1].find('\r'));
+	std::string user = option[2].substr(0, option[2].find('\r'));
+	std::cout << "Setting mode: " << mode << " in channel: " << channel << " to user: " << user << std::endl;
+	for(; i < 10; i++) {
+		if(mode == modes[i])
+			break;
+	}
+	switch (i) {
+		case 0:
+			std::cout << "Removing invite only mode" << std::endl;
+			break;
+		case 1:
+			std::cout << "Setting invite only mode" << std::endl;
+			break;
+		case 2:
+			std::cout << "Removing topic protection mode" << std::endl;
+			break;
+		case 3:
+			std::cout << "Setting topic protection mode" << std::endl;
+			break;
+		case 4:
+			std::cout << "Removing key" << std::endl;
+			break;
+		case 5:
+			std::cout << "Setting key" << std::endl;
+			break;
+		case 6:
+			std::cout << "Removing operator status" << std::endl;
+			break;
+		case 7:
+			std::cout << "Setting operator status" << std::endl;
+			break;
+		case 8:
+			std::cout << "Removing user limit" << std::endl;
+			break;
+		case 9:
+			std::cout << "Setting user limit" << std::endl;
+			break;
+		default:
+			std::cerr << "Invalid mode: " << mode << std::endl;
+			break;
+	}
 
-	std::cout << "Setting mode: " << mode << " in channel: " << channel << std::endl;
 }
 
 void Server::topic(std::vector<std::string> option, int clientFd) {
 	(void)clientFd;
-	std::cout << "Setting topic in channel: " << option[0] << std::endl;
+	std::string channel = option[0];
+	std::string topic = option[1];
+	if (option.size() == 1) {
+		std::cout << "Getting topic of channel: " << channel << std::endl;
+	} else if (option.size() == 2) {
+		std::cout << "Setting topic of channel: " << channel << " to: " << topic << std::endl;
+	} else {
+		std::cerr << "Invalid number of arguments" << std::endl;
+	}
 }
 
 void Server::invite(std::vector<std::string> option, int clientFd) {
@@ -158,9 +213,8 @@ void Server::invite(std::vector<std::string> option, int clientFd) {
 }
 
 void Server::kick(std::vector<std::string> option, int clientFd) {
-	(void)option;
 	(void)clientFd;
-//	std::string channel = option[0].substr(0, option[0].find('\r'));
-//	std::string user = option[1];
-// std::cout << "Kicking " << user << " from channel: " << channel << std::endl;
+	std::string channel = option[0];
+	std::string target = option[1];
+
 }
