@@ -19,36 +19,36 @@ int main(int ac, char **av) {
 	server.setPort(av[1]);
 	server.setPassword(av[2]);
 	
-	std::cout << "Port: " << server.getPort() << std::endl;
-	std::cout << "Password: " << server.getPassword() << std::endl;
-	std::cout << "Server is running..." << std::endl;
-    Channel channel("ChannelName");
-	User user1("User1");
-	User user2("User2");
-	User user3("User3");
-	User user4("User4");
-	User user5("User5");
+	// std::cout << "Port: " << server.getPort() << std::endl;
+	// std::cout << "Password: " << server.getPassword() << std::endl;
+	// std::cout << "Server is running..." << std::endl;
+    // Channel channel("ChannelName");
+	// User user1("User1");
+	// User user2("User2");
+	// User user3("User3");
+	// User user4("User4");
+	// User user5("User5");
 
-    // Add 5 users
-    channel.addUser(&user1);
-    channel.addUser(&user2);
-    channel.addUser(&user3);
-    channel.addUser(&user4);
-    channel.addUser(&user5);
+    // // Add 5 users
+    // channel.addUser(&user1);
+    // channel.addUser(&user2);
+    // channel.addUser(&user3);
+    // channel.addUser(&user4);
+    // channel.addUser(&user5);
 
-    // Promote 3 users to operators
-    channel.promoteToOperator("User1");
-    channel.promoteToOperator("User2");
-    channel.promoteToOperator("User3");
+    // // Promote 3 users to operators
+    // channel.promoteToOperator("User1");
+    // channel.promoteToOperator("User2");
+    // channel.promoteToOperator("User3");
 
-    // Demote one operator back to a user
-    channel.demoteFromOperator("User1");
+    // // Demote one operator back to a user
+    // channel.demoteFromOperator("User1");
 
-    // List all users and operators
-    std::cout << "All Users:\n";
-    channel.listUsers();
-    std::cout << "\nAll Operators:\n";
-    channel.listOperators();
+    // // List all users and operators
+    // std::cout << "All Users:\n";
+    // channel.listUsers();
+    // std::cout << "\nAll Operators:\n";
+    // channel.listOperators();
 
 	try {
 		signal(SIGINT, server.handleSig);

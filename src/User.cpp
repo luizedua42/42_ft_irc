@@ -11,7 +11,7 @@
 
 //Getters and Setters
 
-void User::setUserFD(int userFD) {
+void User::setuserFD(int userFD) {
 	_userFD = userFD;
 }
 
@@ -23,11 +23,11 @@ void User::setNickName(std::string nickName) {
 	_nickName = nickName;
 }
 
-void User::setUserIP(char *userIP) {
+void User::setuserIP(char *userIP) {
 	_userIP = userIP;
 }
 
-int User::getUserFD() {
+int User::getuserFD() {
 	return _userFD;
 }
 
@@ -39,7 +39,7 @@ std::string User::getNickName() {
 	return _nickName;
 }
 
-std::string User::getUserIP() {
+std::string User::getuserIP() {
 	return _userIP;
 }
 

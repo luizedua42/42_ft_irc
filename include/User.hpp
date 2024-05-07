@@ -5,12 +5,12 @@
 * @email     : luizedua@student.42sp.org.br
 * @createdOn : 24/04/2024
 *========================**/
-
+#pragma once
 #ifndef User_HPP
 # define User_HPP
 # include "includes.hpp"
 
-class Channel;
+// class Channel;
 
 class User {
 	
@@ -22,15 +22,16 @@ class User {
 
 	public:
 		//Getters and Setters
-		void setUserFD(int userFD);
+		std::string	clientBuff;
+		void setuserFD(int userFD);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
-		void setUserIP(char * UserIP);
+		void setuserIP(char * userIP);
 		
-		int			getUserFD();
+		int			getuserFD();
 		std::string	getRealName();
 		std::string	getNickName();
-		std::string	getUserIP();
+		std::string	getuserIP();
 
 		User(const char* nickname);
 };
