@@ -1,5 +1,13 @@
 #include "../include/Channel.hpp"
 
+void initModes(std::map<std::string, bool>& modes) {
+	modes["o"] = false;
+	modes["t"] = false;
+	modes["i"] = false;
+	modes["k"] = false;
+	modes["l"] = false;
+}
+
 void Channel::promoteToOperator(const std::string UserNickname) {
     std::map<std::string, User*>::iterator it = _Users.find(UserNickname);
     if (it != _Users.end()) {
@@ -28,8 +36,8 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
-std::string Channel::getMode() const {
-	return this->_mode;
+bool Channel::getModes(std::string mode) const {
+	return this->_modes.at(mode);
 }
 
 std::string Channel::getPassword() const {
@@ -45,9 +53,10 @@ void Channel::addUser(User* User) {
 }
 
 Channel::Channel(const std::string& name) : _name(name) {
-	_topic = "chat";
-	_mode = "default";
+	_topic = "";
+	initModes(_modes);
 	_password = "";
+	_userLimit = MAX_USERS;
 	_Users.clear();
 	_operators.clear();
 }
@@ -73,11 +82,26 @@ void Channel::listOperators() const {
 	}
 }
 
-void Channel::setMode(const std::string& mode) {
-	_mode = mode;
+void Channel::setMode(std::string mode, bool value) {
+	_modes[mode] = value;
 }
 
 void Channel::setPassword(std::string& password) {
 	_password = password;
 }
 
+void Channel::setTopic(const std::string& topic) {
+	_topic = topic;
+}
+
+std::string Channel::getTopic() const {
+	return this->_topic;
+}
+
+void Channel::setUserLimit(int limit) {
+	_userLimit = limit;
+}
+
+int Channel::getUserLimit() const {
+	return _userLimit;
+}

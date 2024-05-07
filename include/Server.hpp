@@ -62,6 +62,7 @@ class Server{
 		void		topic(std::vector<std::string>, int fd);
 		void		invite(std::vector<std::string>, int fd);
 		void		kick(std::vector<std::string>, int fd);
+		void		who(std::vector<std::string>, int fd);
 };
 
 #endif
