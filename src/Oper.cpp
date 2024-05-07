@@ -82,7 +82,7 @@ void Server::selectOptions(std::string buff, int userFD) {
 		int i = 0;
 		std::string option = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
 		std::cout << "buff: " << buff << std::endl;
-		for(; i < 10; i++) {
+		for(; i < 12; i++) {
 			if(option == requests[i])
 				break;
 		}
@@ -171,13 +171,27 @@ void Server::join(std::vector<std::string> options, int userFD) {
 	send(userFD, response.c_str(), response.size(), 0);
 }
 
+std::string messageCat(std::vector<std::string> options) {
+	std::string message;
+	message = options[1].substr(1) + " ";
+	for (size_t i = 2; i < options.size(); i++) {
+		message += options[i] + " ";
+	}
+	return message;
+}
+
 void Server::privmsg(std::vector<std::string> options, int userFD) {
-	std::string channelName = options[0];
+	std::string channelName = options[0].substr(0, options[0].find(' '));
 	std::cout << "Sending message to channel: " << channelName << " - " << std::endl;\
-	std::string message = options[1].substr(1, options[1].find('\r'));
+	std::string message = messageCat(options);
 	std::cout << "Message: " << message << std::endl;
 
 	Channel* channel = getChannel(channelName);
+	if (channel == NULL) {
+		std::cerr << "Channel not found" << std::endl;
+		return;
+	}
+
 	User& user = Server::getUser(userFD);
 
 	std::string response = ":" + user.getNickName() + " PRIVMSG " + channelName + " :" + message + "\r\n";
@@ -299,7 +313,7 @@ void Server::topic(std::vector<std::string> option, int clientFd) {
 	if (option.size() == 1) {
 		std::cout << "Getting topic of channel: " << channelName << std::endl;
 		std::cout << std::boolalpha << channel->getTopic().empty() << std::endl;
-		if(channel->getTopic().empty()) {
+		if(channel->getTopic().size() == 0) {
 			std::cout << "Topic: " << '"' + channel->getTopic() + '"' << std::endl;
 			response = ":ft.irc" + notopic + user.getNickName() + " " + channelName + " :No topic is set\r\n";
 			std::cout << "Sending response: " << response << std::endl;
@@ -329,13 +343,39 @@ void Server::invite(std::vector<std::string> option, int userFD) {
 void Server::kick(std::vector<std::string> option, int userFD) {
 	(void)option;
 	(void)userFD;
-//	std::string channel = option[0].substr(0, option[0].find('\r'));
-//	std::string user = option[1];
-// std::cout << "Kicking " << user << " from channel: " << channel << std::endl;
+}
+static std::vector<User *> getChannelUsers(Channel* channel) {
+	std::vector<User *> users;
+	std::map<std::string, User*> nonOps = channel->getNonOperators();
+	for (std::map<std::string, User*>::iterator it = nonOps.begin(); it != nonOps.end(); ++it) {
+		users.push_back(it->second);
+	}
+	std::map<std::string, User*> ops = channel->getOperators();
+	for (std::map<std::string, User*>::iterator it = ops.begin(); it != ops.end(); ++it) {
+		users.push_back(it->second);
+	}
+	return users;
 }
 void Server::who(std::vector<std::string> option, int userFD) {
-	User& user = Server::getUser(userFD);
+	(void)userFD;
+	#define RPL_WHOREPLY(channel, user, nick, flags, realname)  (":ft.irc 352 " + channel + " " + user + " 42sp.org.br ft.irc " + nick + " " + flags + ":0 " + realname + "\r\n");
+	std::string response;
+
 	std::string channelName = option[0];
-	std::string response = ":ft.irc 352 " + channelName + " " + user.getRealName() + " 42sp.org.br ft.irc " + user.getNickName() + " :0 " + user.getRealName() + "\r\n";
-	send(userFD, response.c_str(), response.size(), 0);
+	Channel* channel = getChannel(channelName);
+	std::vector<User *> users = getChannelUsers(channel);
+	for (size_t i = 0; i < users.size(); i++) {
+		std::string nick = users[i]->getNickName();
+		std::string user = users[i]->getRealName();
+		std::string realName = ":realname";
+		std::string flags = "H ";
+		// if ((*it).isOperator(users[i]))
+		flags += "@ ";
+		response += RPL_WHOREPLY(channelName, user, nick, flags, realName);
+	}
+	std::cout << "Sending response: " << response << std::endl;
+	response += ":ft.irc 315 " + channelName + " :End of /WHO list\r\n";
+	std::cout << "Sending response: " << response << std::endl;
+	if(send (userFD, response.c_str(), response.size(), 0) == -1)
+		std::cerr << "Error sending message" << std::endl;
 }
