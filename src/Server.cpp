@@ -56,27 +56,27 @@ void Server::setupServer() {
 }
 
 void Server::listenUser(int userFD) {
-	User& user = getUser(userFD);
+	User* user = getUser(userFD);
 	char buff[513];
 	bzero(buff, 513);
 
 	ssize_t byte = recv(userFD, buff, 513, 0);
-	if(byte <= 0){
-		user.clientBuff.clear();
+	if(byte < 0){
+		user->clientBuff.clear();
 		Server::clearUsers(userFD);
 		close(userFD);
 		return;
 	}
-	if(user.clientBuff.empty()) {
-		user.clientBuff = buff;
+	user->clientBuff.clear();
+	if(user->clientBuff.empty()) {
+		user->clientBuff = buff;
 	}
 	else
-		user.clientBuff.append(buff);
-	if(user.clientBuff.find("\n") == std::string::npos) {
+		user->clientBuff.append(buff);
+	if(user->clientBuff.find("\n") == std::string::npos) {
 		return;
 	}
-	Server::selectOptions(user.clientBuff, userFD);
-	user.clientBuff.clear();
+	Server::selectOptions(user->clientBuff, userFD);
 }
 
 void Server::setupSocket() {
@@ -165,13 +165,13 @@ void Server::handleSig(int signum) {
 	Server::_signal = false;
 }
 
-User& Server::getUser(int userFD) {
+User* Server::getUser(int userFD) {
 	for(size_t i = 0; i < _Users.size(); i++) {
 		if (_Users[i].getuserFD() == userFD) {
-			return _Users[i];
+			return &_Users[i];
 		}
 	}
-	throw std::runtime_error(ERRMSG_User);
+	return NULL;
 }
 
 bool Server::channelExists(const std::string& channelName) const {

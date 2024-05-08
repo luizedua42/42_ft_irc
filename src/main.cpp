@@ -82,7 +82,7 @@ int main(int ac, char **av) {
 // 	// channel._operators.push_back(user3);
 // 	channel._operators.push_back(user4);
 // 	channel._users.push_back(user3);
-// 	// std::cout << User: << user._name << " n:" << user._id << std::endl << std::cout;
+// 	// std::cout << User: << user->_name << " n:" << user->_id << std::endl << std::cout;
 // 	std::cout << User: << channel._operators[0]._name << " \tn:" << channel._operators[0]._id << std::endl <<
 // 	User: << channel._operators[1]._name << " \tn:" << channel._operators[1]._id << std::endl <<
 // 	User: << channel._operators[2]._name << " \tn:" << channel._operators[2]._id << std::endl <<

@@ -43,7 +43,7 @@ class Server{
 		void				setPort(char *input);
 		void				setPassword(char *input);
 		std::string			getPassword();
-		User&				getUser(int userFD);
+		User*				getUser(int userFD);
 		std::vector<User>	getUserVector();
 
 		//Commands
@@ -63,6 +63,7 @@ class Server{
 		void		invite(std::vector<std::string>, int fd);
 		void		kick(std::vector<std::string>, int fd);
 		void		who(std::vector<std::string>, int fd);
+		void		pass(std::vector<std::string>, int fd);
 };
 
 #endif
