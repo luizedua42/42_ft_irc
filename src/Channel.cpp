@@ -109,3 +109,10 @@ int Channel::getUserLimit() const {
 bool Channel::isOperator(std::string userNickname) const {
 	return _operators.find(userNickname) != _operators.end();
 }
+
+void Channel::removeUser(User* user) {
+	std::map<std::string, User*>::iterator it = _Users.find(user->getNickName());
+	if (it != _Users.end()) {
+		_Users.erase(it);
+	}
+}

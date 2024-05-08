@@ -370,8 +370,32 @@ void Server::invite(std::vector<std::string> option, int userFD) {
 }
 
 void Server::kick(std::vector<std::string> option, int userFD) {
-	(void)option;
-	(void)userFD;
+	std::string channelName = option[0];
+	std::string userToKick = option[1];
+	std::string reason = "test";
+	if (option.size() == 3){ 
+		std::string reason = option[2].substr(1);
+	}
+	std::cout << "Kicking user: " << userToKick << " from channel: " << channelName << std::endl;
+	Channel* channel = getChannel(channelName);
+	User* user = searchUser(userToKick);
+	if (user == NULL) {
+		std::string response = ":ft.irc 401 " + userToKick + " :No such nick/channel\r\n";
+		std::cout << "Sending response: " << response << std::endl;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+	}
+	User& kicker = Server::getUser(userFD);
+	std::vector<User *> users = getChannelUsers(channel);
+	std::string response = ":" + kicker.getNickName() + "!" + kicker.getRealName() + "@ft.irc KICK " + channelName + " " + userToKick + " :"+ reason + "\r\n";
+	std::cout << "Sending response: " << response << std::endl;
+	for (size_t i = 0; i < users.size(); i++) {
+		if (users[i]->getNickName() == userToKick) {
+			send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
+			channel->removeUser(users[i]);
+			break;
+		}
+	}
 }
 static std::vector<User *> getChannelUsers(Channel* channel) {
 	std::vector<User *> users;
