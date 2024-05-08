@@ -401,9 +401,26 @@ void Server::topic(std::vector<std::string> option, int clientFd) {
 	}
 }
 
-void Server::invite(std::vector<std::string> option, int userFD) {
-	(void)userFD;
-	std::cout << "Inviting user to channel: " << option[0] << std::endl;
+void Server::invite(const std::vector<std::string> option, int userFD) {
+	User& user = getUser(userFD);
+    if (options.size() < 2) {
+		throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
+    }
+
+    const std::string& invitedUser = options[0];
+    const std::string& channelName = options[1];
+
+    Channel* channelPtr = getChannel(channelName);
+    if (channelPtr == NULL) {
+        throw std::runtime_error(ERRMSG_NOSUCHCHANNEL);
+    }
+
+    if (!channelPtr->isUserInChannel(user)) {
+		throw std::runtime_error(ERRMSG_NOTONCHANNEL);
+    }
+
+    std::string response = ":ft.irc" + " 341 " + user.getNickName() + " " + invitedUser + " :" + channelName + "\r\n";
+	send(userFD, response.c_str(), response.size(), 0);
 }
 
 void Server::kick(std::vector<std::string> option, int userFD) {
