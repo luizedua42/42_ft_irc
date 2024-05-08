@@ -105,3 +105,7 @@ void Channel::setUserLimit(int limit) {
 int Channel::getUserLimit() const {
 	return _userLimit;
 }
+
+bool Channel::isOperator(std::string userNickname) const {
+	return _operators.find(userNickname) != _operators.end();
+}

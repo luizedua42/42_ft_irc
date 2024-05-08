@@ -28,6 +28,7 @@ class Server{
 		void						listenUser(int userFD);
 		void						acceptNewUser(const char* nickName);
 		void						clearUsers(int userFD);
+		User* 						searchUser(std::string nickName);
 		void						closeFds();
 		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
@@ -57,7 +58,6 @@ class Server{
 		void		quit(std::vector<std::string>, int fd);
 		void		nick(std::vector<std::string>, int fd);
 		void		user(std::vector<std::string>, int fd);
-		void		oper(std::vector<std::string>, int fd);
 		void		mode(std::vector<std::string>, int fd);
 		void		topic(std::vector<std::string>, int fd);
 		void		invite(std::vector<std::string>, int fd);

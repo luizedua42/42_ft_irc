@@ -197,6 +197,15 @@ void Server::createChannel(const std::string channelName) {
 	_channels.push_back(newChannel);
 }
 
+User* Server::searchUser(std::string nickName) {
+	for(size_t i = 0; i < _Users.size(); i++) {
+		if (_Users[i].getNickName() == nickName) {
+			return &_Users[i];
+		}
+	}
+	return NULL;
+}
+
 // std::string response = "CAP * LS :\r\n";
 // send(newsockfd, response.c_str(), response.size(), 0);
 // recv(newsockfd, buff, 100000, 0);

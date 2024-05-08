@@ -7,11 +7,16 @@
 *========================**/
 
 #include "../include/includes.hpp"
+
+static std::vector<User *> getChannelUsers(Channel* channel) ;
+
 namespace mode {
 	void setOp(Channel* channel, std::string user) {
+		std::cout << "Setting operator: " << user << std::endl;
 		channel->promoteToOperator(user);
 	}
 	void unsetOp(Channel* channel, std::string user) {
+		std::cout << "Unsetting operator: " << user << std::endl;
 		channel->demoteFromOperator(user);
 	}
 	void setTopic(Channel* channel) {
@@ -76,13 +81,13 @@ std::vector<std::string> splitBuff(std::string buff) {
 void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
 	
-	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "OPER", "MODE", "TOPIC", "INVITE", "KICK", "WHO"};
+	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO"};
 	
 	do{
 		int i = 0;
 		std::string option = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
 		std::cout << "buff: " << buff << std::endl;
-		for(; i < 12; i++) {
+		for(; i < 11; i++) {
 			if(option == requests[i])
 				break;
 		}
@@ -109,21 +114,18 @@ void Server::selectOptions(std::string buff, int userFD) {
 				quit(parseOptions(parsedOptions), userFD);
 				break;
 			case 6:
-				oper(parseOptions(parsedOptions), userFD);
-				break;
-			case 7:
 				mode(parseOptions(parsedOptions), userFD);
 				break;
-			case 8:
+			case 7:
 				topic(parseOptions(parsedOptions), userFD);
 				break;
-			case 9:
+			case 8:
 				invite(parseOptions(parsedOptions), userFD);
 				break;
-			case 10:
+			case 9:
 				kick(parseOptions(parsedOptions), userFD);
 				break;
-			case 11:
+			case 10:
 				who(parseOptions(parsedOptions), userFD);
 				break;
 			default:
@@ -173,7 +175,14 @@ void Server::join(std::vector<std::string> options, int userFD) {
 
 std::string messageCat(std::vector<std::string> options) {
 	std::string message;
-	message = options[1].substr(1) + " ";
+	if (options[1].find(':') == 0) {
+		message = options[1].substr(1) + " ";
+		for (size_t i = 2; i < options.size(); i++) {
+			message += options[i] + " ";
+		}
+		return message;
+	}
+	message = options[1].substr(0) + " ";
 	for (size_t i = 2; i < options.size(); i++) {
 		message += options[i] + " ";
 	}
@@ -182,17 +191,30 @@ std::string messageCat(std::vector<std::string> options) {
 
 void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::string channelName = options[0].substr(0, options[0].find(' '));
-	std::cout << "Sending message to channel: " << channelName << " - " << std::endl;\
+	std::cout << "Sending message to channel: " << channelName << std::endl;
 	std::string message = messageCat(options);
 	std::cout << "Message: " << message << std::endl;
+	User& user = Server::getUser(userFD);
 
 	Channel* channel = getChannel(channelName);
-	if (channel == NULL) {
-		std::cerr << "Channel not found" << std::endl;
+	if (channel == NULL && channelName[0] == '#') {
+		std::string response = ":ft.irc 401 " + channelName + " :No such nick/channel\r\n";
+		std::cout << "Sending response: " << response << std::endl;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+	} else if (channelName[0] != '#'){
+		User* recipient = searchUser(channelName);
+		if (recipient == NULL) {
+			std::string response = ":ft.irc 401 " + channelName + " :No such nick/channel\r\n";
+			std::cout << "Sending response: " << response << std::endl;
+			send(userFD, response.c_str(), response.size(), 0);
+			return;
+		}
+		std::string response = ":" + user.getNickName() + " PRIVMSG " + recipient->getNickName() + " :" + message + "\r\n";
+		std::cout << "Sending response: " << response << std::endl;
+		send(recipient->getuserFD(), response.c_str(), response.size(), 0);
 		return;
 	}
-
-	User& user = Server::getUser(userFD);
 
 	std::string response = ":" + user.getNickName() + " PRIVMSG " + channelName + " :" + message + "\r\n";
 	std::cout << "Sending response: " << response << std::endl;
@@ -210,7 +232,6 @@ void Server::privmsg(std::vector<std::string> options, int userFD) {
 				send(it->second->getuserFD(), response.c_str(), response.size(), 0);
 		}
 	}
-
 }
 
 void Server::quit(std::vector<std::string> options, int userFD) {
@@ -240,12 +261,6 @@ void Server::user(std::vector<std::string> option, int userFD) {
 	user.setRealName(username);
 }
 
-
-void Server::oper(std::vector<std::string> option, int userFD) {
-	(void)userFD;
-	std::cout << "Opering user: " << option[0] << std::endl;
-}
-
 void Server::mode(std::vector<std::string> option, int clientFd) {
 	if(option.size() < 2 || option.size() > 3){
 		std::cerr << "Invalid number of arguments" << std::endl;
@@ -258,7 +273,10 @@ void Server::mode(std::vector<std::string> option, int clientFd) {
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
 	std::string mode = option[1].substr(0, option[1].find('\r'));
-	std::string modeParam = option[2].substr(0, option[2].find('\r'));
+	std::string modeParam = "";
+	if (option.size() == 3){
+		modeParam = option[2].substr(0, option[2].find('\r'));
+	}
 	// std::cout << "User: " << user.getNickName() <<" Setting mode: " << mode << " in channel: " << channelName << ". Param: " << modeParam << std::endl;
 	for(; i < 10; i++) {
 		if(mode == modes[i])
@@ -315,7 +333,7 @@ void Server::topic(std::vector<std::string> option, int clientFd) {
 		std::cout << std::boolalpha << channel->getTopic().empty() << std::endl;
 		if(channel->getTopic().size() == 0) {
 			std::cout << "Topic: " << '"' + channel->getTopic() + '"' << std::endl;
-			response = ":ft.irc" + notopic + user.getNickName() + " " + channelName + " :No topic is set\r\n";
+			response = ":ft.irc" + notopic + user.getNickName() + " " + channelName + " :No topic is set.\r\n";
 			std::cout << "Sending response: " << response << std::endl;
 			//PROBLEM WITH THIS SEND, CLIENT DOES NOT GET THE RESPONSE
 			if(send (clientFd, response.c_str(), response.size(), 0) == -1)
@@ -326,10 +344,21 @@ void Server::topic(std::vector<std::string> option, int clientFd) {
 		std::cout << "Sending response: " << response << std::endl;
 		send(clientFd, response.c_str(), response.size(), 0);
 		return;
-	} else if (option.size() == 2) {
+	} else if (option.size() == 2 ) {
 		std::string topic = option[1].substr(1);
+		if(channel->getModes("t") == true && !channel->isOperator(user.getNickName())) {
+			std::string response = ":ft.irc 482 " + user.getNickName() + " " + channelName + " :You're not channel operator\r\n";
+			std::cout << "Sending response: " << response << std::endl;
+			send(clientFd, response.c_str(), response.size(), 0);
+			return;
+		}
 		std::cout << "Setting topic of channel: " << channelName << " to: " << topic << std::endl;
 		channel->setTopic(topic);
+		std::vector<User *> users = getChannelUsers(channel);
+		response = ":" + user.getNickName() + "!~" + user.getRealName() + "@ft.irc TOPIC " + channelName + " " + topic + "\r\n";
+		for (size_t i = 0; i < users.size(); i++) {
+			send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
+		}
 	} else {
 		std::cerr << "Invalid number of arguments" << std::endl;
 	}
