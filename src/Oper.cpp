@@ -80,15 +80,9 @@ std::vector<std::string> splitBuff(std::string buff) {
 
 void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
-<<<<<<< HEAD
 	User* client = Server::getUser(userFD);
 	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS"};
 
-=======
-	
-	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "OPER", "MODE", "TOPIC", "INVITE", "KICK", "PART"};
-	
->>>>>>> 8268e5b (missing error responses and broadcast of success response)
 	do{
 		int i = 0;
 		std::string option = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
@@ -191,13 +185,8 @@ void Server::join(std::vector<std::string> options, int userFD) {
 	}
 
 	Channel* channel = getChannel(channelName);
-<<<<<<< HEAD
 	if (channel->getModes("i") == true) {
-		throw std::runtime_error(ERRMSG_InviteOnly);
-=======
-	if (channel->getMode() == "inviteOnly") {
 		throw std::runtime_error(ERRMSG_INVITEONLY);
->>>>>>> 8268e5b (missing error responses and broadcast of success response)
 		return;
     }
 	if (!channel->getPassword().empty()) {
