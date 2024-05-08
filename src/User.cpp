@@ -43,4 +43,22 @@ std::string User::getuserIP() {
 	return _userIP;
 }
 
-User::User(const char* nickName) : _nickName(nickName) {}
+User::User(const char* nickName) : _nickName(nickName) {
+	_isAuth = false;
+}
+
+std::string User::getPassword() {
+	return _password;
+}
+
+void User::setPassword(std::string password) {
+	_password = password;
+}
+
+void User::setIsAuth(bool isAuth) {
+	_isAuth = isAuth;
+}
+
+bool User::getIsAuth() {
+	return _isAuth;
+}

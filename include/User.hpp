@@ -19,6 +19,8 @@ class User {
 		std::string	_realName;
 		std::string	_nickName;
 		std::string	_userIP;
+		std::string _password;
+		bool		_isAuth;
 
 	public:
 		//Getters and Setters
@@ -32,6 +34,10 @@ class User {
 		std::string	getRealName();
 		std::string	getNickName();
 		std::string	getuserIP();
+		std::string	getPassword();
+		void		setPassword(std::string password);
+		void 		setIsAuth(bool isAuth);
+		bool		getIsAuth();
 
 		User(const char* nickname);
 };
