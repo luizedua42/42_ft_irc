@@ -52,6 +52,16 @@ void Channel::addUser(User* User) {
 	_Users.insert(std::make_pair(User->getNickName(), User));
 }
 
+void Channel::removeUser(const std::string& nickname) {
+    std::map<std::string, User*>::iterator it = _Users.find(nickname);
+
+    if (it != _Users.end()) {
+        _Users.erase(it);
+    } else {
+        throw std::runtime_error(ERRMSG_NOTONCHANNEL);
+    }
+}
+
 Channel::Channel(const std::string& name) : _name(name) {
 	_topic = "";
 	initModes(_modes);

@@ -80,9 +80,15 @@ std::vector<std::string> splitBuff(std::string buff) {
 
 void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
+<<<<<<< HEAD
 	User* client = Server::getUser(userFD);
 	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS"};
 
+=======
+	
+	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "OPER", "MODE", "TOPIC", "INVITE", "KICK", "PART"};
+	
+>>>>>>> 8268e5b (missing error responses and broadcast of success response)
 	do{
 		int i = 0;
 		std::string option = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
@@ -185,8 +191,13 @@ void Server::join(std::vector<std::string> options, int userFD) {
 	}
 
 	Channel* channel = getChannel(channelName);
+<<<<<<< HEAD
 	if (channel->getModes("i") == true) {
 		throw std::runtime_error(ERRMSG_InviteOnly);
+=======
+	if (channel->getMode() == "inviteOnly") {
+		throw std::runtime_error(ERRMSG_INVITEONLY);
+>>>>>>> 8268e5b (missing error responses and broadcast of success response)
 		return;
     }
 	if (!channel->getPassword().empty()) {
@@ -469,3 +480,59 @@ void Server::who(std::vector<std::string> option, int userFD) {
 	if(send (userFD, response.c_str(), response.size(), 0) == -1)
 		std::cerr << "Error sending message" << std::endl;
 }
+	User& user = getUser(userFD);
+
+    if (option.size() < 2) {
+		throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
+    }
+
+    const std::string& channelName = option[0];
+    const std::string& userToBeKicked = option[1];
+
+    Channel* channelPtr = getChannel(channelName);
+    if (channelPtr == NULL) {
+        throw std::runtime_error(ERRMSG_NOSUCHCHANNEL);
+    }
+
+    if (!channelPtr->isOperator(user.getNickName())) {
+        throw std::runtime_error(ERRMSG_CHANOPRIVSNEEDED);
+    }
+
+    channelPtr->removeUser(userToBeKicked);
+
+	std::string response = ":" + user.getNickName() + "!" + user.getRealName() + "KICK " + channelName + userToBeKicked + user.getNickName();
+	send(userFD, response.c_str(), response.size(), 0);
+}
+
+
+void Server::part(const std::vector<std::string> option, int userFD) {
+	User& user = getUser(userFD);
+	std::string response = ":" + user.getNickName() + "!" + user.getRealName() + "PART ";
+
+    if (option[0].empty()) {
+		throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
+    }
+
+    std::vector<std::string> channels;
+    std::istringstream iss(option[0]);
+    std::string channel;
+	size_t i = 0;
+
+    while (std::getline(iss, channel, ',')) {
+        Channel* channelPtr = getChannel(channel);
+        if (channelPtr == NULL) {
+			throw std::runtime_error(ERRMSG_NOSUCHCHANNEL); //can we throw this erros without returning to check next group?
+        }
+
+        channelPtr->removeUser(user.getNickName());
+		if (i != 0)
+		{
+			response += ",";
+		}
+		response += channel;
+    }
+
+	response +=  "\r\n";
+	send(userFD, response.c_str(), response.size(), 0); //broadcast to all
+}
+
