@@ -423,46 +423,7 @@ void Server::invite(const std::vector<std::string> option, int userFD) {
 	send(userFD, response.c_str(), response.size(), 0);
 }
 
-void Server::kick(std::vector<std::string> option, int userFD) {
-	std::string channelName = option[0];
-	std::string userToKick = option[1];
-	std::string reason = "test";
-	if (option.size() == 3){ 
-		std::string reason = option[2].substr(1);
-	}
-	std::cout << "Kicking user: " << userToKick << " from channel: " << channelName << std::endl;
-	Channel* channel = getChannel(channelName);
-	User* user = searchUser(userToKick);
-	if (user == NULL) {
-		std::string response = ":ft.irc 401 " + userToKick + " :No such nick/channel\r\n";
-		std::cout << "Sending response: " << response << std::endl;
-		send(userFD, response.c_str(), response.size(), 0);
-		return;
-	}
-	User* kicker = Server::getUser(userFD);
-	std::vector<User *> users = getChannelUsers(channel);
-	std::string response = ":" + kicker->getNickName() + "!" + kicker->getRealName() + "@ft.irc KICK " + channelName + " " + userToKick + " :"+ reason + "\r\n";
-	std::cout << "Sending response: " << response << std::endl;
-	for (size_t i = 0; i < users.size(); i++) {
-		if (users[i]->getNickName() == userToKick) {
-			send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
-			channel->removeUser(users[i]);
-			break;
-		}
-	}
-}
-static std::vector<User *> getChannelUsers(Channel* channel) {
-	std::vector<User *> users;
-	std::map<std::string, User*> nonOps = channel->getNonOperators();
-	for (std::map<std::string, User*>::iterator it = nonOps.begin(); it != nonOps.end(); ++it) {
-		users.push_back(it->second);
-	}
-	std::map<std::string, User*> ops = channel->getOperators();
-	for (std::map<std::string, User*>::iterator it = ops.begin(); it != ops.end(); ++it) {
-		users.push_back(it->second);
-	}
-	return users;
-}
+
 void Server::who(std::vector<std::string> option, int userFD) {
 	(void)userFD;
 	#define RPL_WHOREPLY(channel, user, nick, flags, realname)  (":ft.irc 352 " + channel + " " + user + " 42sp.org.br ft.irc " + nick + " " + flags + ":0 " + realname + "\r\n");
@@ -470,7 +431,7 @@ void Server::who(std::vector<std::string> option, int userFD) {
 
 	std::string channelName = option[0];
 	Channel* channel = getChannel(channelName);
-	std::vector<User *> users = getChannelUsers(channel);
+	std::vector<User *> users = channel->getAllUsers();
 	for (size_t i = 0; i < users.size(); i++) {
 		std::string nick = users[i]->getNickName();
 		std::string user = users[i]->getRealName();
@@ -486,59 +447,84 @@ void Server::who(std::vector<std::string> option, int userFD) {
 	if(send (userFD, response.c_str(), response.size(), 0) == -1)
 		std::cerr << "Error sending message" << std::endl;
 }
+
+void Server::kick(std::vector<std::string> option, int userFD) {
 	User& user = getUser(userFD);
 
     if (option.size() < 2) {
-		throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
+		//response with (ERRMSG_NEEDMOREPARAMS);
+		return;
     }
 
     const std::string& channelName = option[0];
     const std::string& userToBeKicked = option[1];
 
+	if (option.size() == 3){ 
+		std::string reason = option[2].substr(1);
+	}
+	else {
+		std::string kickReason = "no reason";
+	}
+
     Channel* channelPtr = getChannel(channelName);
     if (channelPtr == NULL) {
-        throw std::runtime_error(ERRMSG_NOSUCHCHANNEL);
+        //response with (ERRMSG_NOSUCHCHANNEL);
+		std::string response = ":ft.irc 403 " + channelName + " :No such channel\r\n";
+		// std::cout << "Sending response: " << response << std::endl;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
     }
 
     if (!channelPtr->isOperator(user.getNickName())) {
-        throw std::runtime_error(ERRMSG_CHANOPRIVSNEEDED);
+        //response with (ERRMSG_CHANOPRIVSNEEDED);
+		std::string response = ":ft.irc 482 " + channelName + ":You are not a channel operator\r\n";
+		// std::cout << "Sending response: " << response << std::endl;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
     }
 
+	std::vector<User *> users = getChannelUsers(channelPtr);
+	std::string response = ":" + user->getNickName() + "!" + user->getRealName() + "@ft.irc KICK " + channelName + " " + userToBeKicked + " :"+ reason + "\r\n";
+	std::cout << "Sending response: " << response << std::endl;
+	for (size_t i = 0; i < users.size(); i++) {
+		send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
+	}
     channelPtr->removeUser(userToBeKicked);
-
-	std::string response = ":" + user.getNickName() + "!" + user.getRealName() + "KICK " + channelName + userToBeKicked + user.getNickName();
-	send(userFD, response.c_str(), response.size(), 0);
 }
-
 
 void Server::part(const std::vector<std::string> option, int userFD) {
 	User& user = getUser(userFD);
-	std::string response = ":" + user.getNickName() + "!" + user.getRealName() + "PART ";
 
     if (option[0].empty()) {
-		throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
-    }
+		//response with (ERRMSG_NEEDMOREPARAMS);
+		return;
+    } else if (option.size() > 1) {
+		std::string partReason = "";
+		for (size_t i = 1; i < option.size(); i++) {
+			partReason += option[i];
+		}
+	}
 
     std::vector<std::string> channels;
     std::istringstream iss(option[0]);
     std::string channel;
 	size_t i = 0;
 
-    while (std::getline(iss, channel, ',')) {
-        Channel* channelPtr = getChannel(channel);
-        if (channelPtr == NULL) {
-			throw std::runtime_error(ERRMSG_NOSUCHCHANNEL); //can we throw this erros without returning to check next group?
-        }
-
-        channelPtr->removeUser(user.getNickName());
-		if (i != 0)
-		{
-			response += ",";
+	while (std::getline(iss, channel, ',')) {
+		Channel* channelPtr = getChannel(channel);
+		if (channelPtr == NULL) {
+			//response with (ERRMSG_NOSUCHCHANNEL);
+			std::string response = ":ft.irc 403 " + channelName + " :No such channel\r\n";
+			// std::cout << "Sending response: " << response << std::endl;
+			send(userFD, response.c_str(), response.size(), 0);
+		} else {
+			channelPtr->removeUser(user.getNickName());
+			std::string response = ":" + user->getNickName() + "!~" + user->getRealName() + "@* PART " + channelName + " :" + partReason + "\r\n";
+			std::vector<User *> users = getChannelUsers(channelPtr);
+			for (size_t i = 0; i < users.size(); i++) {
+				send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
+			}
 		}
-		response += channel;
-    }
-
-	response +=  "\r\n";
-	send(userFD, response.c_str(), response.size(), 0); //broadcast to all
+	}
 }
 

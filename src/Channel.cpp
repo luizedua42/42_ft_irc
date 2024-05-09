@@ -32,6 +32,19 @@ std::map<std::string, User*> Channel::getNonOperators() const {
     return this->_Users;
 }
 
+std::vector<User*> getAllUsers() const {
+	std::vector<User*> allUsers;
+	
+	for (std::map<std::string, User*>::const_iterator it = _operators.begin(); it != _operators.end(); it++) {
+		allUsers.push_back(it->second);
+	}
+	for (std::map<std::string, User*>::const_iterator it = _Users.begin(); it != _Users.end(); it++) {
+		allUsers.push_back(it->second);
+	}
+	
+	return allUsers;
+}
+
 std::string Channel::getName() const {
 	return this->_name;
 }
@@ -79,7 +92,7 @@ Channel::~Channel(void) {
 // Function to list all users' nicknames
 void Channel::listUsers() const {
 	std::cout << "List of Users:\n";
-	for (std::map<std::string, User*>::const_iterator it = _Users.begin(); it != _Users.end(); ++it) {
+	for (std::map<std::string, User*>::const_iterator it = _Users.begin(); it != _Users.end(); it++) {
 		std::cout << it->second->getNickName() << std::endl;
 	}
 }
@@ -87,7 +100,7 @@ void Channel::listUsers() const {
 // Function to list all operators' nicknames
 void Channel::listOperators() const {
 	std::cout << "List of Operators:\n";
-	for (std::map<std::string, User*>::const_iterator it = _operators.begin(); it != _operators.end(); ++it) {
+	for (std::map<std::string, User*>::const_iterator it = _operators.begin(); it != _operators.end(); it++) {
 		std::cout << it->second->getNickName() << std::endl;
 	}
 }
