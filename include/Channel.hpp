@@ -12,7 +12,7 @@ class Channel {
 		std::string						_topic;
 		std::string						_password;
 		std::map<std::string, bool>		_modes;
-		std::map<std::string, User*>	_Users;
+		std::map<std::string, User*>	_users;
 		std::map<std::string, User*>	_operators;
 
 	public:
@@ -30,7 +30,8 @@ class Channel {
 		void							setPassword(std::string& password);
 		void							setTopic(const std::string& topic);
 		void							setUserLimit(int limit);
-		void							removeUser(User* user);
+		void							removeUser(const std::string& nickname);
+		std::vector<User*>				getAllUsers() const;
 		std::string 					getName() const;
 		std::string						getPassword() const;
 		std::string						getTopic() const;
