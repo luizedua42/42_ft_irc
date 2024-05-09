@@ -172,6 +172,7 @@ User* Server::getUser(int userFD) {
 		}
 	}
 	return NULL;
+	//send with(ERRMSG_USER);
 }
 
 bool Server::channelExists(const std::string& channelName) const {

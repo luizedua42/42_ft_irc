@@ -64,6 +64,7 @@ class Server{
 		void		kick(std::vector<std::string>, int fd);
 		void		who(std::vector<std::string>, int fd);
 		void		pass(std::vector<std::string>, int fd);
+		void		part(std::vector<std::string>, int fd);
 };
 
 #endif
