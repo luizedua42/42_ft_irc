@@ -172,7 +172,7 @@ User* Server::getUser(int userFD) {
 		}
 	}
 	return NULL;
-	throw std::runtime_error(ERRMSG_USER);
+	//send with(ERRMSG_USER);
 }
 
 bool Server::channelExists(const std::string& channelName) const {

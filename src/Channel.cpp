@@ -71,7 +71,7 @@ void Channel::removeUser(const std::string& nickname) {
     if (it != _users.end()) {
         _users.erase(it);
     } else {
-        throw std::runtime_error(ERRMSG_NOTONCHANNEL);
+        // send with (ERRMSG_NOTONCHANNEL);
     }
 }
 

@@ -79,13 +79,13 @@ std::vector<std::string> splitBuff(std::string buff) {
 void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
 	User* client = Server::getUser(userFD);
-	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS"};
+	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS", "PART"};
 
 	do{
 		int i = 0;
 		std::string options = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
 		std::cout << "buff: " << buff << std::endl;
-		for(; i < 12; i++) {
+		for(; i < 13; i++) {
 			if(options == requests[i])
 				break;
 		}
@@ -136,6 +136,9 @@ void Server::selectOptions(std::string buff, int userFD) {
 			case 11:
 				pass(parseOptions(parsedOptions), userFD);
 				break;
+			case 12:
+				part(parseOptions(parsedOptions), userFD);
+				break;
 			default:
 				mode::unknownCommand(options, userFD);
 				break;
@@ -184,7 +187,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
 
 	Channel* channelPtr = getChannel(channelName);
 	if (channelPtr->getModes("i") == true) {
-		throw std::runtime_error(ERRMSG_INVITEONLY);
+		// send (ERRMSG_INVITEONLY);
 		return;
     }
 	if (!channelPtr->getPassword().empty()) {
