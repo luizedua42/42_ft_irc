@@ -437,7 +437,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 	(void)options;
 	// User* user = getUser(userFD);
     // if (options.size() < 2) {
-	// 	throw std::runtime_error(ERRMSG_NEEDMOREPARAMS);
+	// 	throw std::runtime_error(ERR_NEEDMOREPARAMS);
     // }
 
     // const std::string& invitedUser = options[0];
@@ -445,11 +445,11 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 
     // Channel* channelPtr = getChannel(channelName);
     // if (channelPtr == NULL) {
-    //     throw std::runtime_error(ERRMSG_NOSUCHCHANNEL);
+    //     throw std::runtime_error(ERR_NOSUCHCHANNEL);
     // }
 
     // if (!channelPtr->isUserInChannel(user)) {
-	// 	throw std::runtime_error(ERRMSG_NOTONCHANNEL);
+	// 	throw std::runtime_error(ERR_NOTONCHANNEL);
     // }
 
     // std::string response = ":ft.irc" + " 341 " + user.getNickName() + " " + invitedUser + " :" + channelName + "\r\n";
@@ -485,7 +485,7 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 	User* user = getUser(userFD);
 
     if (options.size() < 2) {
-		//response with (ERRMSG_NEEDMOREPARAMS);
+		//response with (ERR_NEEDMOREPARAMS);
 		return;
     }
 
@@ -501,7 +501,7 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 
     Channel* channelPtr = getChannel(channelName);
     if (channelPtr == NULL) {
-        //response with (ERRMSG_NOSUCHCHANNEL);
+        //response with (ERR_NOSUCHCHANNEL);
 		std::string response = ":ft.irc 403 " + channelName + " :No such channel\r\n";
 		// std::cout << "Sending response: " << response << std::endl;
 		send(userFD, response.c_str(), response.size(), 0);
@@ -509,7 +509,7 @@ void Server::kick(std::vector<std::string> options, int userFD) {
     }
 
     if (!channelPtr->isOperator(user->getNickName())) {
-        //response with (ERRMSG_CHANOPRIVSNEEDED);
+        //response with (ERR_CHANOPRIVSNEEDED);
 		std::string response = ":ft.irc 482 " + channelName + ":You are not a channel operator\r\n";
 		// std::cout << "Sending response: " << response << std::endl;
 		send(userFD, response.c_str(), response.size(), 0);
@@ -530,7 +530,7 @@ void Server::part(const std::vector<std::string> options, int userFD) {
 	std::string partReason = "";
 
     if (options[0].empty()) {
-		//response with (ERRMSG_NEEDMOREPARAMS);
+		//response with (ERR_NEEDMOREPARAMS);
 		return;
     } else if (options.size() > 1) {
 		for (size_t i = 1; i < options.size(); i++) {
@@ -544,7 +544,7 @@ void Server::part(const std::vector<std::string> options, int userFD) {
 	while (std::getline(iss, channelName, ',')) {
 		Channel* channelPtr = getChannel(channelName);
 		if (channelPtr == NULL) {
-			//response with (ERRMSG_NOSUCHCHANNEL);
+			//response with (ERR_NOSUCHCHANNEL);
 			std::string response = ":ft.irc 403 " + channelName + " :No such channel\r\n";
 			// std::cout << "Sending response: " << response << std::endl;
 			send(userFD, response.c_str(), response.size(), 0);
