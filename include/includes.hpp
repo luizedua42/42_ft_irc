@@ -35,5 +35,7 @@
 # include "Server.hpp"
 # include "Channel.hpp"
 
+void	splitString(std::string& str, char delimiter, std::vector<std::string>& tokens);
+
 
 #endif
