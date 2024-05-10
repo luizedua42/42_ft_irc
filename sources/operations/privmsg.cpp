@@ -1,5 +1,21 @@
 #include "../headers/mainHeader.hpp"
 
+std::string messageCat(std::vector<std::string> options) {
+	std::string message;
+	if (options[1].find(':') == 0) {
+		message = options[1].substr(1) + " ";
+		for (size_t i = 2; i < options.size(); i++) {
+			message += options[i] + " ";
+		}
+		return message;
+	}
+	message = options[1].substr(0) + " ";
+	for (size_t i = 2; i < options.size(); i++) {
+		message += options[i] + " ";
+	}
+	return message;
+}
+
 void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::string channelName = options[0].substr(0, options[0].find(' '));
 	std::cout << "Sending message to channel: " << channelName << std::endl;

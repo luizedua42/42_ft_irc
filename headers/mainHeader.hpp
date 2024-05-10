@@ -30,7 +30,6 @@
 # include <unistd.h>
 # include <vector>
 # include "Channel.hpp"
-# include "error.hpp"
 # include "otherMacros.hpp"
 # include "responses.hpp"
 # include "Server.hpp"

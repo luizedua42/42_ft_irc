@@ -8,8 +8,7 @@ C++		= c++
 CFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 HEADERS = ./headers/mainHeader.hpp\
-		./headers/Channel.hpp
-		./headers/error.hpp\
+		./headers/Channel.hpp\
 		./headers/otherMacros.hpp\
 		./headers/responses.hpp\
 		./headers/Server.hpp\
@@ -22,15 +21,15 @@ SOURCES = ./sources/main.cpp\
 		./sources/operations/kick.cpp\
 		./sources/operations/mode.cpp\
 		./sources/operations/nick.cpp\
+		./sources/operations/Oper.cpp\
 		./sources/operations/part.cpp\
 		./sources/operations/pass.cpp\
 		./sources/operations/privmsg.cpp\
 		./sources/operations/quit.cpp\
 		./sources/operations/topic.cpp\
 		./sources/operations/user.cpp\
-		./sources/operations/who.cpp
+		./sources/operations/who.cpp\
 		./sources/Channel.cpp\
-		./sources/Oper.cpp\
 		./sources/Server.cpp\
 		./sources/User.cpp\
 		./sources/utils.cpp\

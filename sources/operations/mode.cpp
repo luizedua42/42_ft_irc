@@ -1,5 +1,44 @@
 #include "../headers/mainHeader.hpp"
 
+namespace mode {
+	void setOp(Channel* channel, std::string user) {
+		std::cout << "Setting operator: " << user << std::endl;
+		channel->promoteToOperator(user);
+	}
+	void unsetOp(Channel* channel, std::string user) {
+		std::cout << "Unsetting operator: " << user << std::endl;
+		channel->demoteFromOperator(user);
+	}
+	void setTopic(Channel* channel) {
+		channel->setMode("t", true);
+	}
+	void unsetTopic(Channel* channel) {
+		channel->setMode("t", false);
+	}
+	void setInvite(Channel* channel) {
+		channel->setMode("i", true);
+	}
+	void unsetInvite(Channel* channel) {
+		channel->setMode("i", false);
+	}
+	void setKey(Channel* channel, std::string key) {
+		channel->setPassword(key);
+	}
+	void unsetKey(Channel* channel) {
+		std::string key = "";
+		channel->setPassword(key);
+	}
+	void setLimit(Channel* channel, std::string param) {
+		std::stringstream ss(param);
+		int limit;
+		ss >> limit;
+		channel->setUserLimit(limit);
+	}
+	void unsetLimit(Channel* channel) {
+		channel->setUserLimit(MAX_USERS);
+	}
+}
+
 void Server::mode(std::vector<std::string> options, int clientFd) {
 	if(options.size() < 2 || options.size() > 3){
 		std::cerr << "Invalid number of arguments" << std::endl;
@@ -53,7 +92,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			mode::setLimit(channel, modeParam);
 			break;
 		default:
-			mode::unknownCommand(mode, clientFd);
+			Server::unknownCommand(mode, clientFd);
 			break;
 	}
 }

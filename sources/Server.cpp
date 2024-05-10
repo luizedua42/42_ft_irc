@@ -7,7 +7,6 @@
 *========================**/
 
 #include "../headers/mainHeader.hpp"
-#include "../headers/error.hpp"
 #include "../headers/Server.hpp"
 
 void Server::setPort(char *input) {

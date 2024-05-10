@@ -16,9 +16,10 @@ class User {
 	
 	private:
 		int			_userFD;
-		std::string	_realName;
-		std::string	_nickName;
 		std::string	_userIP;
+		std::string	_nickName;
+		std::string	_realName;
+		std::string _userName;
 		std::string _password;
 		bool		_isAuth;
 
@@ -33,6 +34,7 @@ class User {
 		int			getuserFD();
 		std::string	getRealName();
 		std::string	getNickName();
+		std::string getUserName();
 		std::string	getuserIP();
 		std::string	getPassword();
 		void		setPassword(std::string password);

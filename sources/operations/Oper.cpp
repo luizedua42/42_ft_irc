@@ -8,51 +8,6 @@
 
 #include "../headers/mainHeader.hpp"
 
-namespace mode {
-	void setOp(Channel* channel, std::string user) {
-		std::cout << "Setting operator: " << user << std::endl;
-		channel->promoteToOperator(user);
-	}
-	void unsetOp(Channel* channel, std::string user) {
-		std::cout << "Unsetting operator: " << user << std::endl;
-		channel->demoteFromOperator(user);
-	}
-	void setTopic(Channel* channel) {
-		channel->setMode("t", true);
-	}
-	void unsetTopic(Channel* channel) {
-		channel->setMode("t", false);
-	}
-	void setInvite(Channel* channel) {
-		channel->setMode("i", true);
-	}
-	void unsetInvite(Channel* channel) {
-		channel->setMode("i", false);
-	}
-	void setKey(Channel* channel, std::string key) {
-		channel->setPassword(key);
-	}
-	void unsetKey(Channel* channel) {
-		std::string key = "";
-		channel->setPassword(key);
-	}
-	void setLimit(Channel* channel, std::string param) {
-		std::stringstream ss(param);
-		int limit;
-		ss >> limit;
-		channel->setUserLimit(limit);
-	}
-	void unsetLimit(Channel* channel) {
-		channel->setUserLimit(MAX_USERS);
-	}
-	void unknownCommand(std::string command, int userFD) {
-		std::string response = command + ":Unknown command\r\n";
-		//PROBLEM WITH THIS SEND, CLIENT DOES NOT GET THE RESPONSE
-		if(send(userFD, response.c_str(), response.size(), 0) == -1)
-			std::cerr << "Error sending message" << std::endl;
-	}
-}
-
 std::vector<std::string> Server::parseOptions(std::string str) {
 	std::string word;
 	std::stringstream ss(str);
@@ -74,6 +29,13 @@ std::vector<std::string> splitBuff(std::string buff) {
 		splittedBuff.push_back(word);
 	}
 	return splittedBuff;
+}
+
+void Server::unknownCommand(std::string command, int userFD) {
+	std::string response = command + ":Unknown command\r\n";
+	//PROBLEM WITH THIS SEND, CLIENT DOES NOT GET THE RESPONSE
+	if(send(userFD, response.c_str(), response.size(), 0) == -1)
+		std::cerr << "Error sending message" << std::endl;
 }
 
 void Server::selectOptions(std::string buff, int userFD) {
@@ -140,33 +102,9 @@ void Server::selectOptions(std::string buff, int userFD) {
 				part(parseOptions(parsedOptions), userFD);
 				break;
 			default:
-				mode::unknownCommand(options, userFD);
+				unknownCommand(options, userFD);
 				break;
 		}
 		splittedBuff.erase(splittedBuff.begin());
 		} while (!splittedBuff.empty());
 }
-
-std::string messageCat(std::vector<std::string> options) {
-	std::string message;
-	if (options[1].find(':') == 0) {
-		message = options[1].substr(1) + " ";
-		for (size_t i = 2; i < options.size(); i++) {
-			message += options[i] + " ";
-		}
-		return message;
-	}
-	message = options[1].substr(0) + " ";
-	for (size_t i = 2; i < options.size(); i++) {
-		message += options[i] + " ";
-	}
-	return message;
-}
-
-
-
-
-
-
-
-
