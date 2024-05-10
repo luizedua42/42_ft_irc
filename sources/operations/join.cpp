@@ -29,7 +29,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
 	User* user = getUser(userFD);
 	for (size_t i = 0; i < channels.size(); i++) {
 		if (!isValidChannelName(channels[i])) {
-			response = IRC + ERR_NOSUCHCHANNELNBR + channels[i] + ERR_NOSUCHCHANNEL + END;
+			response = IRC + ERR_BADCHANMASKNBR + channels[i] + ERR_BADCHANMASK + END;
 			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}

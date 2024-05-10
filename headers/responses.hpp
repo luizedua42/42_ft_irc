@@ -55,8 +55,8 @@
 
 //error messages
 # define ERR_ACCEPT "Error on accept"
-# define ERR_ALREADYREGISTRED ":You may not reregister"
-# define ERR_BADCHANMASK ":Invalid channel name"
+# define ERR_ALREADYREGISTRED " :You may not reregister"
+# define ERR_BADCHANMASK " :Invalid channel name"
 # define ERR_BANNEDFROMCHAN "<channel> :Cannot join channel (+b)"
 # define ERR_BIND "Error on bind"
 # define ERR_CANNOTSENDTOCHAN "<channel name> :Cannot send to channel"

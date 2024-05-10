@@ -2,9 +2,10 @@
 
 void Server::kick(std::vector<std::string> options, int userFD) {
 	User* user = getUser(userFD);
+	std::string response;
 
     if (options.size() < 2) {
-		//response with (ERR_NEEDMOREPARAMS);
+		response = IRC + ERR_NEEDMOREPARAMSNBR + " KICK " + ERR_NEEDMOREPARAMS + END;
 		return;
     }
 
@@ -20,24 +21,19 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 
     Channel* channelPtr = getChannel(channelName);
     if (channelPtr == NULL) {
-        //response with (ERR_NOSUCHCHANNEL);
-		std::string response = ":ft.irc 403 " + channelName + " :No such channel\r\n";
-		// std::cout << "Sending response: " << response << std::endl;
+		response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
 
     if (!channelPtr->isOperator(user->getNickName())) {
-        //response with (ERR_CHANOPRIVSNEEDED);
-		std::string response = ":ft.irc 482 " + channelName + ":You are not a channel operator\r\n";
-		// std::cout << "Sending response: " << response << std::endl;
+		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
 
 	std::vector<User *> users = channelPtr->getAllUsers();
-	std::string response = ":" + user->getNickName() + "!" + user->getRealName() + "@ft.irc KICK " + channelName + " " + userToBeKicked + " :"+ kickReason + "\r\n";
-	std::cout << "Sending response: " << response << std::endl;
+	response = ":" + user->getNickName() + "!" + user->getRealName() + "@ft.irc KICK " + channelName + " " + userToBeKicked + " :"+ kickReason + END;
 	for (size_t i = 0; i < users.size(); i++) {
 		send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
 	}
