@@ -8,18 +8,18 @@ void initModes(std::map<std::string, bool>& modes) {
 	modes["l"] = false;
 }
 
-void Channel::promoteToOperator(const std::string UserNickname) {
-    std::map<std::string, User*>::iterator it = _users.find(UserNickname);
+void Channel::promoteToOperator(const std::string userNickname) {
+    std::map<std::string, User*>::iterator it = _users.find(userNickname);
     if (it != _users.end()) {
-        _operators[UserNickname] = it->second;
+        _operators[userNickname] = it->second;
         _users.erase(it);
     }
 }
 
-void Channel::demoteFromOperator(const std::string UserNickname) {
-    std::map<std::string, User*>::iterator it = _operators.find(UserNickname);
+void Channel::demoteFromOperator(const std::string userNickname) {
+    std::map<std::string, User*>::iterator it = _operators.find(userNickname);
     if (it != _operators.end()) {
-        _users[UserNickname] = it->second;
+        _users[userNickname] = it->second;
         _operators.erase(it);
     }
 }
@@ -80,6 +80,7 @@ Channel::Channel(const std::string& name) : _name(name) {
 	initModes(_modes);
 	_password = "";
 	_userLimit = MAX_USERS;
+	_inviteList.clear();
 	_users.clear();
 	_operators.clear();
 }
@@ -131,4 +132,13 @@ int Channel::getUserLimit() const {
 
 bool Channel::isOperator(std::string userNickname) const {
 	return _operators.find(userNickname) != _operators.end();
+}
+
+bool Channel::isUserInvited(const std::string userNickname) const {
+	for (std::vector<std::string>::const_iterator it = _inviteList.begin(); it != _inviteList.end(); ++it) {
+		if (*it == userNickname) {
+			return true;
+		}
+	}
+	return false;
 }

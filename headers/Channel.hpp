@@ -11,6 +11,7 @@ class Channel {
 		std::string						_name;
 		std::string						_topic;
 		std::string						_password;
+		std::vector<std::string>		_inviteList;
 		std::map<std::string, bool>		_modes;
 		std::map<std::string, User*>	_users;
 		std::map<std::string, User*>	_operators;
@@ -19,6 +20,7 @@ class Channel {
 		int								getUserLimit() const;
 		bool							getModes(std::string mode) const;
 		bool							isOperator(std::string userNickname) const;
+		bool							isUserInvited(const std::string userNickname) const;
 		void							setMode(std::string mode, bool value);
 		void							addUser(User* user);
 		void							setName(const std::string& name);

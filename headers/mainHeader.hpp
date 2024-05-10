@@ -10,29 +10,32 @@
 # define INCLUDES_HPP
 # define MAX_USERS 666
 
-# include <iostream>
-# include <string>
-# include <list>
-# include <poll.h>
-# include <unistd.h>
-# include <sys/socket.h>
-# include <sys/types.h>
-# include <netinet/in.h>
+# include <algorithm>
 # include <arpa/inet.h>
 # include <csignal>
-# include <fcntl.h>
-# include <limits>
-# include <cstdlib>
 # include <cstdio>
-# include <errno.h>
-# include <sstream>
+# include <cstdlib>
 # include <cstring>
-# include <vector>
+# include <errno.h>
+# include <fcntl.h>
+# include <iostream>
+# include <limits>
+# include <list>
 # include <map>
-# include <algorithm>
-# include "error.hpp"
-# include "User.hpp"
-# include "Server.hpp"
+# include <netinet/in.h>
+# include <poll.h>
+# include <sstream>
+# include <string>
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <unistd.h>
+# include <vector>
 # include "Channel.hpp"
+# include "error.hpp"
+# include "responses.hpp"
+# include "Server.hpp"
+# include "User.hpp"
+
+void	splitString(std::string& str, char delimiter, std::vector<std::string>& tokens);
 
 #endif
