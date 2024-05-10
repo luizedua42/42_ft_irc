@@ -80,6 +80,7 @@ Channel::Channel(const std::string& name) : _name(name) {
 	initModes(_modes);
 	_password = "";
 	_userLimit = MAX_USERS;
+	_inviteList.clear();
 	_users.clear();
 	_operators.clear();
 }
@@ -131,4 +132,13 @@ int Channel::getUserLimit() const {
 
 bool Channel::isOperator(std::string userNickname) const {
 	return _operators.find(userNickname) != _operators.end();
+}
+
+bool Channel::isUserInvited(const std::string userNickname) const {
+	for (std::vector<std::string>::const_iterator it = _inviteList.begin(); it != _inviteList.end(); ++it) {
+		if (*it == userNickname) {
+			return true;
+		}
+	}
+	return false;
 }
