@@ -17,6 +17,7 @@ static bool isValidChannelName(const std::string& channelName) {
 void Server::join(std::vector<std::string> options, int userFD) {
 	bool isOperator = false;
 
+	std::string response;
 	std::vector<std::string> channels;
     splitString(options[0], ',', channels);
 
@@ -28,8 +29,8 @@ void Server::join(std::vector<std::string> options, int userFD) {
 	User* user = getUser(userFD);
 	for (size_t i = 0; i < channels.size(); i++) {
 		if (!isValidChannelName(channels[i])) {
-			std::cout << "invalid channel name message check" << std::endl;
-			//send error invalid channel name
+			response = IRC + ERR_NOSUCHCHANNELNBR + channels[i] + ERR_NOSUCHCHANNEL + END;
+			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}
 
@@ -40,13 +41,15 @@ void Server::join(std::vector<std::string> options, int userFD) {
 
 		Channel* channelPtr = getChannel(channels[i]);
 		if (channelPtr->getModes("i") == true && !channelPtr->isUserInvited(user->getNickName())) {
-			// send (ERRMSG_INVITEONLY);
+			response = IRC + ERR_INVITEONLYCHANNBR + channels[i] + ERR_INVITEONLYCHAN + END;
+			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}
 
 		std::string password = channelPtr->getPassword();
 		if (!password.empty() && password != passwords[i]) {
-			//send error message invalid password
+			response = IRC + ERR_PASSWDMISMATCHNBR + channels[i] + ERR_PASSWDMISMATCH + END;
+			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}
 

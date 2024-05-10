@@ -8,10 +8,12 @@ C++		= c++
 CFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 HEADERS = ./headers/mainHeader.hpp\
+		./headers/Channel.hpp
+		./headers/error.hpp\
+		./headers/otherMacros.hpp\
+		./headers/responses.hpp\
 		./headers/Server.hpp\
 		./headers/User.hpp\
-		./headers/error.hpp\
-		./headers/Channel.hpp
 
 SOURCES = ./sources/main.cpp\
 		./sources/operations/cap.cpp\

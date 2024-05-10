@@ -8,7 +8,6 @@
 #pragma once
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
-# define MAX_USERS 666
 
 # include <algorithm>
 # include <arpa/inet.h>
@@ -32,6 +31,7 @@
 # include <vector>
 # include "Channel.hpp"
 # include "error.hpp"
+# include "otherMacros.hpp"
 # include "responses.hpp"
 # include "Server.hpp"
 # include "User.hpp"
