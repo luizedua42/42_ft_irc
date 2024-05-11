@@ -51,6 +51,7 @@ $(OBJ_DIR)/%.o: %.cpp $(HEADERS)
 
 clean:
 	@rm -fr ${OBJ_DIR}
+	@rmdir ./mandatory
 	@${ECHO} "${RED}Objects removed!${RESET}"
 
 fclean: clean
