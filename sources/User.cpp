@@ -6,7 +6,7 @@
 * @createdOn : 24/04/2024
 *========================**/
 
-#include "../include/includes.hpp"
+#include "../headers/mainHeader.hpp"
 
 
 //Getters and Setters
@@ -39,12 +39,15 @@ std::string User::getNickName() {
 	return _nickName;
 }
 
+std::string User::getUserName() {
+	return _userName;
+}
+
 std::string User::getuserIP() {
 	return _userIP;
 }
 
-User::User(const char* nickName) : _nickName(nickName) {
-	_isAuth = false;
+User::User(const char* nickName) : _nickName(nickName), _realName("realname"), _userName(nickName), _isAuth(false) {
 }
 
 std::string User::getPassword() {

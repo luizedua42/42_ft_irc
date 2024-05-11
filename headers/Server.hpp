@@ -8,7 +8,7 @@
 #pragma once
 #ifndef SERVER_HPP
 # define SERVER_HPP
-# include "includes.hpp"
+# include "mainHeader.hpp"
 
 class User;
 class Channel;
@@ -51,6 +51,7 @@ class Server{
 		void						createChannel(std::string channelName);
 		void						selectOptions(std::string buff, int userFD);
 		std::vector<std::string>	parseOptions(std::string buff);
+		void 						unknownCommand(std::string command, int userFD);
 
 		void		cap(int userFD);
 		void		join(std::vector<std::string>, int fd);

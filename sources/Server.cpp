@@ -6,9 +6,8 @@
 * @createdOn : 17/04/2024
 *========================**/
 
-#include "../include/includes.hpp"
-#include "../include/error.hpp"
-#include "../include/Server.hpp"
+#include "../headers/mainHeader.hpp"
+#include "../headers/Server.hpp"
 
 void Server::setPort(char *input) {
 	std::stringstream iss;
@@ -40,7 +39,7 @@ void Server::setupServer() {
 	while (_signal) {
 		
 		if(poll(&_fds[0], _fds.size(), -1) == -1 && _signal)
-			throw std::runtime_error(ERRMSG_POLL);
+			throw std::runtime_error(ERR_POLL);
 
 		for(size_t i = 0 ; i < _fds.size(); i++) {
 			if(_fds[i].revents & POLLIN) {
@@ -91,19 +90,19 @@ void Server::setupSocket() {
 	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	std::cout << "Socket: " << _sockfd << std::endl;
 	if (_sockfd < 0)
-		throw std::runtime_error(ERRMSG_SOCKET);
+		throw std::runtime_error(ERR_SOCKET);
 
 	if(setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opval, sizeof(int)) < 0)
-		throw std::runtime_error(ERRMSG_SETSOCKOPT);
+		throw std::runtime_error(ERR_SETSOCKOPT);
 
 	if(fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error(ERRMSG_FCNTL);
+		throw std::runtime_error(ERR_FCNTL);
 
 	if (bind(_sockfd, (struct sockaddr *) &serv, sizeof(serv)) < 0)
-		throw std::runtime_error(ERRMSG_BIND);
+		throw std::runtime_error(ERR_BIND);
 
 	if(listen(_sockfd, SOMAXCONN) < 0)
-		throw std::runtime_error(ERRMSG_LISTEN);
+		throw std::runtime_error(ERR_LISTEN);
 
 	newPoll.fd = _sockfd;
 	newPoll.events = POLLIN;
@@ -121,10 +120,10 @@ void Server::acceptNewUser(const char* nickName) {
 	int newsockfd = accept(_sockfd, (struct sockaddr *) &cliAdd, &clilen);
 	
 	if (newsockfd < 0)
-		throw std::runtime_error(ERRMSG_ACCEPT);
+		throw std::runtime_error(ERR_ACCEPT);
 
 	if (fcntl(_sockfd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error(ERRMSG_FCNTL);
+		throw std::runtime_error(ERR_FCNTL);
 
 	newPoll.fd = newsockfd;
 	newPoll.events = POLLIN;
@@ -172,7 +171,7 @@ User* Server::getUser(int userFD) {
 		}
 	}
 	return NULL;
-	//send with(ERRMSG_USER);
+	//send with(ERR_USER);
 }
 
 bool Server::channelExists(const std::string& channelName) const {

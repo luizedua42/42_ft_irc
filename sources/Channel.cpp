@@ -1,4 +1,4 @@
-#include "../include/Channel.hpp"
+#include "../headers/Channel.hpp"
 
 void initModes(std::map<std::string, bool>& modes) {
 	modes["o"] = false;
@@ -8,18 +8,18 @@ void initModes(std::map<std::string, bool>& modes) {
 	modes["l"] = false;
 }
 
-void Channel::promoteToOperator(const std::string UserNickname) {
-    std::map<std::string, User*>::iterator it = _users.find(UserNickname);
+void Channel::promoteToOperator(const std::string userNickname) {
+    std::map<std::string, User*>::iterator it = _users.find(userNickname);
     if (it != _users.end()) {
-        _operators[UserNickname] = it->second;
+        _operators[userNickname] = it->second;
         _users.erase(it);
     }
 }
 
-void Channel::demoteFromOperator(const std::string UserNickname) {
-    std::map<std::string, User*>::iterator it = _operators.find(UserNickname);
+void Channel::demoteFromOperator(const std::string userNickname) {
+    std::map<std::string, User*>::iterator it = _operators.find(userNickname);
     if (it != _operators.end()) {
-        _users[UserNickname] = it->second;
+        _users[userNickname] = it->second;
         _operators.erase(it);
     }
 }
@@ -65,13 +65,15 @@ void Channel::addUser(User* User) {
 	_users.insert(std::make_pair(User->getNickName(), User));
 }
 
-void Channel::removeUser(const std::string& nickname) {
+bool Channel::removeUser(const std::string& nickname) {
     std::map<std::string, User*>::iterator it = _users.find(nickname);
 
     if (it != _users.end()) {
         _users.erase(it);
+		return true;
     } else {
-        // send with (ERRMSG_NOTONCHANNEL);
+		std::string response = IRC + ERR_NOTONCHANNELNBR + _name + ERR_NOTONCHANNEL + END;
+		return false;
     }
 }
 
