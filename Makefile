@@ -56,7 +56,6 @@ clean:
 
 fclean: clean
 	@rm -fr ${NAME}
-	@rmdir ./mandatory
 	@${ECHO} "${RED}Files removed!${RESET}"
 
 re: fclean ${NAME}
