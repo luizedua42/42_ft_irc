@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 void Server::quit(std::vector<std::string> options, int userFD) {
 	std::string channel= options[0];

@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 void Server::part(const std::vector<std::string> options, int userFD) {
 	User* user = getUserByFD(userFD);

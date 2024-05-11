@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 namespace mode {
 	void setOp(Channel* channel, std::string user) {

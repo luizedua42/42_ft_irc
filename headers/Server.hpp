@@ -26,7 +26,7 @@ class Server{
 	public:
 		//Methods
 		void						listenUser(int userFD);
-		void						acceptNewUser(const char* nickName);
+		void						acceptNewUser(void);
 		void						clearUsers(int userFD);
 		void						closeFds();
 		bool						channelExists(const std::string &channelName) const;

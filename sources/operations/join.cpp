@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 static bool isValidChannelName(const std::string& channelName) {
     if (channelName.empty() || channelName[0] != '#') {

@@ -6,7 +6,7 @@
 * @createdOn : 25/04/2024
 *========================**/
 
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 std::vector<std::string> Server::parseOptions(std::string str) {
 	std::string word;
@@ -33,7 +33,6 @@ std::vector<std::string> splitBuff(std::string buff) {
 
 void Server::unknownCommand(std::string command, int userFD) {
 	std::string response = command + ":Unknown command\r\n";
-	//PROBLEM WITH THIS SEND, CLIENT DOES NOT GET THE RESPONSE
 	if(send(userFD, response.c_str(), response.size(), 0) == -1)
 		std::cerr << "Error sending message" << std::endl;
 }
@@ -51,7 +50,7 @@ void Server::selectOptions(std::string buff, int userFD) {
 			if(options == requests[i])
 				break;
 		}
-		if(client->getIsAuth() == false) {
+		if(client->isAuth() == false) {
 			if (i != 0 && i != 1 && i != 2 && i != 11) {
 				std::string response = "You have not registered\r\n";
 				std::cout << "Sending response: " << response << std::endl;

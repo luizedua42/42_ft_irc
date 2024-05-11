@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 void Server::invite(const std::vector<std::string> options, int userFD) {
 	std::string response;

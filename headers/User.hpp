@@ -21,12 +21,12 @@ class User {
 		std::string	_realName;
 		std::string _userName;
 		std::string _password;
-		bool		_isAuth;
 
 	public:
 		//Getters and Setters
 		std::string	clientBuff;
 		void setuserFD(int userFD);
+		void setUserName(std::string userName);
 		void setRealName(std::string realName);
 		void setNickName(std::string nickName);
 		void setuserIP(char * userIP);
@@ -38,10 +38,9 @@ class User {
 		std::string	getuserIP();
 		std::string	getPassword();
 		void		setPassword(std::string password);
-		void 		setIsAuth(bool isAuth);
-		bool		getIsAuth();
+		bool		isAuth();
 
-		User(const char* nickname);
+		User(const int userFD);
 };
 
 #endif
