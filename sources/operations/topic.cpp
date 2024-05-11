@@ -21,7 +21,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 				std::cerr << "Error sending message" << std::endl;
 			return;
 		}
-		response = IRC + RPL_TOPIC + user->getNickName() + " " + channelName + " :" + channelPtr->getTopic() + END;
+		response = IRC + RPL_TOPICNBR + user->getNickName() + " " + channelName + " :" + channelPtr->getTopic() + END;
 		std::cout << "Sending response: " << response << std::endl;
 		send(clientFd, response.c_str(), response.size(), 0);
 		return;
