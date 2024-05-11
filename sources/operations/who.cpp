@@ -16,7 +16,7 @@ void Server::who(std::vector<std::string> options, int userFD) {
 		if(send (userFD, response.c_str(), response.size(), 0) == -1)
 			std::cerr << "Error sending message" << std::endl;
 	}
-	response = ":ft.irc 315 " + channelName + " :End of /WHO list\r\n";
+	response = IRC + RPL_ENDOFWHONBR + channelName + RPL_ENDOFWHO + END;
 	if(send (userFD, response.c_str(), response.size(), 0) == -1)
 		std::cerr << "Error sending message" << std::endl;
 }

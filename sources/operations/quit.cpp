@@ -2,7 +2,7 @@
 
 void Server::quit(std::vector<std::string> options, int userFD) {
 	std::string channel= options[0];
-	User* test = Server::getUser(userFD);
+	User* user = Server::getUser(userFD);
 	
-	std::cout << test->getNickName() <<":" <<"Quittin" << channel << std::endl;
+	std::cout << user->getNickName() << ":" << "Quittin" << channel << std::endl;
 }

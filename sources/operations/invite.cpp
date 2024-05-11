@@ -20,6 +20,6 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 	// 	throw std::runtime_error(ERR_NOTONCHANNEL);
     // }
 
-    // std::string response = ":ft.irc" + " 341 " + user.getNickName() + " " + invitedUser + " :" + channelName + "\r\n";
+    // std::string response = ":ft.irc" + " 341 " + user.getNickName() + " " + invitedUser + " :" + channelName + END;
 	// send(userFD, response.c_str(), response.size(), 0);
 }

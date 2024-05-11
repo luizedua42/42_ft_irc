@@ -21,8 +21,9 @@ class Channel {
 		bool							getModes(std::string mode) const;
 		bool							isOperator(std::string userNickname) const;
 		bool							isUserInvited(const std::string userNickname) const;
-		void							setMode(std::string mode, bool value);
+		bool							removeUser(const std::string& nickname);
 		void							addUser(User* user);
+		void							setMode(std::string mode, bool value);
 		void							setName(const std::string& name);
 		void							promoteToOperator(std::string userNickname); //add to operator, remove from user
 		void							demoteFromOperator(std::string userNickname); //add to user, remove from operator
@@ -32,7 +33,6 @@ class Channel {
 		void							setPassword(std::string& password);
 		void							setTopic(const std::string& topic);
 		void							setUserLimit(int limit);
-		void							removeUser(const std::string& nickname);
 		std::vector<User*>				getAllUsers() const;
 		std::string 					getName() const;
 		std::string						getPassword() const;

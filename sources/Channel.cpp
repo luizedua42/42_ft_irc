@@ -65,13 +65,15 @@ void Channel::addUser(User* User) {
 	_users.insert(std::make_pair(User->getNickName(), User));
 }
 
-void Channel::removeUser(const std::string& nickname) {
+bool Channel::removeUser(const std::string& nickname) {
     std::map<std::string, User*>::iterator it = _users.find(nickname);
 
     if (it != _users.end()) {
         _users.erase(it);
+		return true;
     } else {
-        // send with (ERR_NOTONCHANNEL);
+		std::string response = IRC + ERR_NOTONCHANNELNBR + _name + ERR_NOTONCHANNEL + END;
+		return false;
     }
 }
 
