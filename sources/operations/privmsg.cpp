@@ -22,7 +22,7 @@ void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::cout << "Sending message to channel: " << channelName << std::endl;
 	std::string message = messageCat(options);
 	std::cout << "Message: " << message << std::endl;
-	User* user = Server::getUser(userFD);
+	User* user = Server::getUserByFD(userFD);
 
 	Channel* channelPtr = getChannel(channelName);
 	if (channelPtr == NULL && channelName[0] == '#') {
@@ -31,7 +31,7 @@ void Server::privmsg(std::vector<std::string> options, int userFD) {
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	} else if (channelName[0] != '#'){
-		User* recipient = searchUser(channelName);
+		User* recipient = getUserByNick(channelName);
 		if (recipient == NULL) {
 			response = IRC + ERR_NOSUCHNICKNBR + channelName + ERR_NOSUCHNICK + END;
 			std::cout << "Sending response: " << response << std::endl;

@@ -132,7 +132,7 @@ int Channel::getUserLimit() const {
 	return _userLimit;
 }
 
-bool Channel::isOperator(std::string userNickname) const {
+bool Channel::isUserOperator(const std::string userNickname) const {
 	return _operators.find(userNickname) != _operators.end();
 }
 
@@ -143,4 +143,11 @@ bool Channel::isUserInvited(const std::string userNickname) const {
 		}
 	}
 	return false;
+}
+
+bool Channel::isUserOnChannel(const std::string userNickname) const {
+    bool isUserOnChannel = (_users.find(userNickname) != _users.end());
+    bool isUserOperator = (_operators.find(userNickname) != _operators.end());
+
+    return isUserOnChannel || isUserOperator;
 }

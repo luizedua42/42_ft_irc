@@ -1,7 +1,7 @@
 #include "../headers/mainHeader.hpp"
 
 void Server::part(const std::vector<std::string> options, int userFD) {
-	User* user = getUser(userFD);
+	User* user = getUserByFD(userFD);
 	std::string partReason = "";
 	std::string response;
 

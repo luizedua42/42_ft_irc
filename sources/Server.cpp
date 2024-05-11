@@ -55,7 +55,7 @@ void Server::setupServer() {
 }
 
 void Server::listenUser(int userFD) {
-	User* user = getUser(userFD);
+	User* user = getUserByFD(userFD);
 	char buff[513];
 	bzero(buff, 513);
 
@@ -164,14 +164,22 @@ void Server::handleSig(int signum) {
 	Server::_signal = false;
 }
 
-User* Server::getUser(int userFD) {
+User* Server::getUserByFD(int userFD) {
 	for(size_t i = 0; i < _Users.size(); i++) {
 		if (_Users[i].getuserFD() == userFD) {
 			return &_Users[i];
 		}
 	}
 	return NULL;
-	//send with(ERR_USER);
+}
+
+User* Server::getUserByNick(std::string nickName) {
+	for(size_t i = 0; i < _Users.size(); i++) {
+		if (_Users[i].getNickName() == nickName) {
+			return &_Users[i];
+		}
+	}
+	return NULL;
 }
 
 bool Server::channelExists(const std::string& channelName) const {
@@ -195,15 +203,6 @@ Channel* Server::getChannel(const std::string& channelName) {
 void Server::createChannel(const std::string channelName) {
 	Channel newChannel(channelName);
 	_channels.push_back(newChannel);
-}
-
-User* Server::searchUser(std::string nickName) {
-	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getNickName() == nickName) {
-			return &_Users[i];
-		}
-	}
-	return NULL;
 }
 
 // std::string response = "CAP * LS :\r\n";

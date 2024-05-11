@@ -15,7 +15,7 @@ static bool isValidChannelName(const std::string& channelName) {
 }
 
 void Server::join(std::vector<std::string> options, int userFD) {
-	bool isOperator = false;
+	bool isUserOperator = false;
 
 	std::string response;
 	std::vector<std::string> channels;
@@ -26,7 +26,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
         splitString(options[1], ',', passwords);
     }
 
-	User* user = getUser(userFD);
+	User* user = getUserByFD(userFD);
 	for (size_t i = 0; i < channels.size(); i++) {
 		if (!isValidChannelName(channels[i])) {
 			response = IRC + ERR_BADCHANMASKNBR + channels[i] + ERR_BADCHANMASK + END;
@@ -36,7 +36,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
 
 		if (!channelExists(channels[i])) {
 			createChannel(channels[i]);
-			isOperator = true;
+			isUserOperator = true;
 		}
 
 		Channel* channelPtr = getChannel(channels[i]);
@@ -54,7 +54,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		}
 
 		channelPtr->addUser(user);
-		if (isOperator) {
+		if (isUserOperator) {
 			channelPtr->promoteToOperator(user->getNickName());
 		}
 		
