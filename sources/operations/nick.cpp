@@ -1,7 +1,7 @@
 #include "../headers/mainHeader.hpp"
 
 void Server::nick(std::vector<std::string> options, int userFD) {
-	User* user = Server::getUser(userFD);
+	User* user = Server::getUserByFD(userFD);
 	if(user == NULL)
 		return;
 

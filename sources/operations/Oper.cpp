@@ -40,7 +40,7 @@ void Server::unknownCommand(std::string command, int userFD) {
 
 void Server::selectOptions(std::string buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
-	User* client = Server::getUser(userFD);
+	User* client = Server::getUserByFD(userFD);
 	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS", "PART"};
 
 	do{

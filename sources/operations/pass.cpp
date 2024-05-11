@@ -1,7 +1,7 @@
 #include "../headers/mainHeader.hpp"
 
 void Server::pass(std::vector<std::string> options, int userFD) {
-	User* user = Server::getUser(userFD);
+	User* user = Server::getUserByFD(userFD);
 	std::string response;
 	std::string password = options[0].substr(0, options[0].find('\r'));
 

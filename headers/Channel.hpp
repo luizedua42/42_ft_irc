@@ -19,8 +19,9 @@ class Channel {
 	public:
 		int								getUserLimit() const;
 		bool							getModes(std::string mode) const;
-		bool							isOperator(std::string userNickname) const;
 		bool							isUserInvited(const std::string userNickname) const;
+		bool							isUserOperator(const std::string userNickname) const;
+		bool							isUserOnChannel(const std::string userNickname) const;
 		bool							removeUser(const std::string& nickname);
 		void							addUser(User* user);
 		void							setMode(std::string mode, bool value);

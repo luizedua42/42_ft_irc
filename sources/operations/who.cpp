@@ -9,7 +9,7 @@ void Server::who(std::vector<std::string> options, int userFD) {
 	std::vector<User *> users = channelPtr->getAllUsers();
 	for (size_t i = 0; i < users.size(); i++) {
 		std::string flags = "H ";
-		// if ((*it).isOperator(users[i]))
+		// if ((*it).isUserOperator(users[i]))
 			flags += "@ ";
 		response = IRC + RPL_WHOREPLYNBR + channelName + " " + users[i]->getUserName() + "42sp.org.br ft_irc " + 
 			users[i]->getNickName() + " " + flags + ":0" + users[i]->getRealName() + END;

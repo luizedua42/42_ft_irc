@@ -7,7 +7,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 	std::string channelName = options[0];
 	
 	Channel* channelPtr = getChannel(channelName);
-	User* user = Server::getUser(clientFd);
+	User* user = Server::getUserByFD(clientFd);
 	std::cout << "User: " << user->getNickName() << "userFD: " << clientFd << std::endl;
 	if (options.size() == 1) {
 		std::cout << "Getting topic of channel: " << channelName << std::endl;
@@ -27,7 +27,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 		return;
 	} else if (options.size() == 2 ) {
 		std::string topic = options[1].substr(1);
-		if(channelPtr->getModes("t") == true && !channelPtr->isOperator(user->getNickName())) {
+		if(channelPtr->getModes("t") == true && !channelPtr->isUserOperator(user->getNickName())) {
 			response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
 			std::cout << "Sending response: " << response << std::endl;
 			send(clientFd, response.c_str(), response.size(), 0);

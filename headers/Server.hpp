@@ -28,7 +28,6 @@ class Server{
 		void						listenUser(int userFD);
 		void						acceptNewUser(const char* nickName);
 		void						clearUsers(int userFD);
-		User* 						searchUser(std::string nickName);
 		void						closeFds();
 		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
@@ -43,7 +42,8 @@ class Server{
 		void				setPort(char *input);
 		void				setPassword(char *input);
 		std::string			getPassword();
-		User*				getUser(int userFD);
+		User*				getUserByFD(int userFD);
+		User* 				getUserByNick(std::string nickName);
 		std::vector<User>	getUserVector();
 
 		//Commands

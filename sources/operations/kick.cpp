@@ -1,7 +1,7 @@
 #include "../headers/mainHeader.hpp"
 
 void Server::kick(std::vector<std::string> options, int userFD) {
-	User* user = getUser(userFD);
+	User* user = getUserByFD(userFD);
 	std::string response;
 
     if (options.size() < 2) {
@@ -26,7 +26,7 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 		return;
     }
 
-    if (!channelPtr->isOperator(user->getNickName())) {
+    if (!channelPtr->isUserOperator(user->getNickName())) {
 		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
