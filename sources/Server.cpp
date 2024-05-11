@@ -171,7 +171,6 @@ User* Server::getUserByFD(int userFD) {
 		}
 	}
 	return NULL;
-	//send with(ERR_USER);
 }
 
 User* Server::getUserByNick(std::string nickName) {

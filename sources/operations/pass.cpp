@@ -18,6 +18,5 @@ void Server::pass(std::vector<std::string> options, int userFD) {
 		user->setIsAuth(true);
 		response = IRC + RPL_WELCOMENBR + user->getNickName() + RPL_WELCOME + user->getNickName() + "!" + user->getRealName() + "@*" + END;
 		send(userFD, response.c_str(), response.size(), 0);
-	
 	}
 }
