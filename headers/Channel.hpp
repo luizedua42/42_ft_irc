@@ -24,6 +24,8 @@ class Channel {
 		bool							isUserOnChannel(const std::string userNickname) const;
 		bool							removeUser(const std::string& nickname);
 		void							addUser(User* user);
+		void							addToInviteList(const std::string nickname);
+		void 							removeFromInviteList(const std::string nickname);
 		void							setMode(std::string mode, bool value);
 		void							setName(const std::string& name);
 		void							promoteToOperator(std::string userNickname); //add to operator, remove from user

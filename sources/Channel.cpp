@@ -65,6 +65,19 @@ void Channel::addUser(User* User) {
 	_users.insert(std::make_pair(User->getNickName(), User));
 }
 
+void Channel::addToInviteList(const std::string nickname) {
+    _inviteList.push_back(nickname);
+}
+
+void Channel::removeFromInviteList(const std::string nickname) {
+    for (std::vector<std::string>::iterator it = _inviteList.begin(); it != _inviteList.end(); ++it) {
+        if (*it == nickname) {
+            _inviteList.erase(it);
+            break;
+        }
+    }
+}
+
 bool Channel::removeUser(const std::string& nickname) {
     std::map<std::string, User*>::iterator it = _users.find(nickname);
 

@@ -6,6 +6,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 
     if (options.size() < 2) {
 		response = IRC + ERR_NEEDMOREPARAMSNBR + " INVITE " + ERR_NEEDMOREPARAMS + END;
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
 
@@ -47,7 +48,23 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 			continue;
 		}
 
-		std::string response = IRC + RPL_INVITINGNBR + channelName + " " + user->getNickName() + RPL_INVITING + END;
+		channelPtr->addToInviteList(invitedUserNick);
+		response = IRC + RPL_INVITINGNBR + channelName + " " + invitedUserNick + END;
+		std::cout << "response = " << response;
 		send(userFD, response.c_str(), response.size(), 0);
+
+		response = IRC + " You have been invited to " + channelName + " by " + user->getNickName() + END;
+		int invitedFD = invitedUser->getuserFD();
+		send(invitedFD, response.c_str(), response.size(), 0);
+
+		response = IRC + invitedUserNick + " has been invited to " + channelName + " by " + user->getNickName() + END;
+			std::map<std::string, User*> operators = channelPtr->getOperators();
+
+		for (std::map<std::string, User*>::iterator it = operators.begin(); it != operators.end(); ++it) {
+			if (it->second->getNickName() != user->getNickName()) {
+				if(it->second->getuserFD() != userFD)
+					send(it->second->getuserFD(), response.c_str(), response.size(), 0);
+			}
+		}
 	}
 }
