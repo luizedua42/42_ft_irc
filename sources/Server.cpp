@@ -204,7 +204,15 @@ void Server::createChannel(const std::string channelName) {
 	_channels.push_back(newChannel);
 }
 
-// std::string response = "CAP * LS :\r\n";
-// send(newsockfd, response.c_str(), response.size(), 0);
-// recv(newsockfd, buff, 100000, 0);
-// std::cout << buff;
+void Server::removeChannel(const std::string channelName) {
+	if (_channels.empty()) {
+		return;
+	}
+
+	for(size_t i = 0; i < _channels.size(); i++) {
+		if (_channels[i].getName() == channelName) {
+			_channels.erase(_channels.begin() + i);
+			break;
+		}
+	}
+}

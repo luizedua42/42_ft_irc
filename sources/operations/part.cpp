@@ -29,5 +29,11 @@ void Server::part(const std::vector<std::string> options, int userFD) {
 				send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
 			}
 		}
+		channelPtr->removeUser(user->getNickName());
+
+		if (channelPtr->getAllUsers().size() == 0) {
+			removeChannel(channelName);
+		}
 	}
+	
 }
