@@ -60,7 +60,7 @@
 # define ERR_BANNEDFROMCHAN std::string(" <channel> :Cannot join channel (+b) ")
 # define ERR_BIND std::string(" Error on bind ")
 # define ERR_CANNOTSENDTOCHAN std::string(" <channel name> :Cannot send to channel ")
-# define ERR_CHANNELISFULL std::string(" <channel> :Cannot join channel (+l) ")
+# define ERR_CHANNELISFULL std::string(" :Cannot join channel (+l) ")
 # define ERR_CHANOPRIVSNEEDED std::string(" <channel> :You're not channel operator ")
 # define ERR_ERRONEUSNICKNAME std::string(" <nick> :Erroneus nickname ")
 # define ERR_FCNTL std::string(" Error on fcntl ")

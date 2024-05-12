@@ -57,7 +57,13 @@ void Server::join(std::vector<std::string> options, int userFD) {
 			continue;
 		}
 
-		channelPtr->addUser(user);
+		if(channelPtr->getUserCount() < channelPtr->getUserLimit()) {
+			channelPtr->addUser(user);
+		} else {
+			response = IRC + ERR_CHANNELISFULLNBR + channels[i] + ERR_CHANNELISFULL + END;
+			send(userFD, response.c_str(), response.size(), 0);
+			continue;
+		}
 		if (isUserOperator) {
 			channelPtr->promoteToOperator(user->getNickName());
 		}

@@ -8,6 +8,7 @@ class User;
 class Channel {
 	private:
 		int								_userLimit;
+		int								_userCount;
 		std::string						_name;
 		std::string						_topic;
 		std::string						_password;
@@ -17,6 +18,9 @@ class Channel {
 		std::map<std::string, User*>	_operators;
 
 	public:
+		int								getUserCount() const;
+		void							incrementUserCount(void);
+		void							decrementUserCount(void);
 		int								getUserLimit() const;
 		bool							getModes(std::string mode) const;
 		bool							isUserInvited(const std::string userNickname) const;

@@ -23,12 +23,10 @@ void Server::part(const std::vector<std::string> options, int userFD) {
 			response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
 			send(userFD, response.c_str(), response.size(), 0);
 		} else {
-			if (channelPtr->removeUser(user->getNickName())) {
-				response = ":" + user->getNickName() + "!~" + user->getRealName() + "@* PART " + channelName + " :" + partReason + END;
-				std::vector<User *> users = channelPtr->getAllUsers();
-				for (size_t i = 0; i < users.size(); i++) {
-					send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
-				}
+			response = ":" + user->getNickName() + "!~" + user->getRealName() + "@* PART " + channelName + " :" + partReason + END;
+			std::vector<User *> users = channelPtr->getAllUsers();
+			for (size_t i = 0; i < users.size(); i++) {
+				send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
 			}
 		}
 	}

@@ -2,11 +2,9 @@
 
 namespace mode {
 	void setOp(Channel* channel, std::string user) {
-		std::cout << "Setting operator: " << user << std::endl;
 		channel->promoteToOperator(user);
 	}
 	void unsetOp(Channel* channel, std::string user) {
-		std::cout << "Unsetting operator: " << user << std::endl;
 		channel->demoteFromOperator(user);
 	}
 	void setTopic(Channel* channel) {
@@ -44,7 +42,8 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		std::cerr << "Invalid number of arguments" << std::endl;
 		return;
 	}
-
+	std::string response = "";
+	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
 	
@@ -55,7 +54,9 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	if (options.size() == 3){
 		modeParam = options[2].substr(0, options[2].find('\r'));
 	}
-	// std::cout << "User: " << user->getNickName() <<" Setting mode: " << mode << " in channel: " << channelName << ". Param: " << modeParam << std::endl;
+
+	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
+
 	for(; i < 10; i++) {
 		if(mode == modes[i])
 			break;
@@ -63,36 +64,49 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	switch (i) {
 		case 0:
 			mode::unsetInvite(channel);
+			response += "-i";
 			break;
 		case 1:
 			mode::setInvite(channel);
+			response += "+i";
 			break;
 		case 2:
 			mode::unsetTopic(channel);
+			response += "-t";
 			break;
 		case 3:
 			mode::setTopic(channel);
+			response += "+t";
 			break;
 		case 4:
+			response += "-k";
 			mode::unsetKey(channel);
 			break;
 		case 5:
+			response += "+k";
 			mode::setKey(channel, modeParam);
 			break;
 		case 6:
 			mode::unsetOp(channel, modeParam);
+			response += "-o";
 			break;
 		case 7:
 			mode::setOp(channel, modeParam);
+			response += "+o";
 			break;
 		case 8:
 			mode::unsetLimit(channel);
+			response += "-l";
 			break;
 		case 9:
 			mode::setLimit(channel, modeParam);
+			response += "+l";
 			break;
 		default:
 			Server::unknownCommand(mode, clientFd);
+			response = "";
 			break;
 	}
+	response += " " + modeParam + "\r\n";
+	send(clientFd, response.c_str(), response.size(), 0);
 }

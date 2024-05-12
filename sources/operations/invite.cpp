@@ -50,10 +50,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 
 		channelPtr->addToInviteList(invitedUserNick);
 		response = IRC + RPL_INVITINGNBR + channelName + " " + invitedUserNick + END;
-		std::cout << "response = " << response;
 		send(userFD, response.c_str(), response.size(), 0);
-
-		response = IRC + " You have been invited to " + channelName + " by " + user->getNickName() + END;
 		int invitedFD = invitedUser->getuserFD();
 		send(invitedFD, response.c_str(), response.size(), 0);
 
