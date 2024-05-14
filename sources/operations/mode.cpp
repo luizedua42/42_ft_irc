@@ -38,22 +38,23 @@ namespace mode {
 }
 
 void Server::mode(std::vector<std::string> options, int clientFd) {
+	std::string response;
+	std::string mode;
 	if(options.size() < 2 || options.size() > 3){
-		std::cerr << "Invalid number of arguments" << std::endl;
+		response = "Usage: /mode <channel> <mode> [param]\r\n";
+		send(clientFd, response.c_str(), response.size(), 0);
 		return;
 	}
-	std::string response = "";
 	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
-	
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
-	std::string mode = options[1].substr(0, options[1].find('\r'));
+	if(options.size() > 2)
+		mode = options[1].substr(0, options[1].find('\r'));
 	std::string modeParam = "";
-	if (options.size() == 3){
-		modeParam = options[2].substr(0, options[2].find('\r'));
-	}
+	if(options.size() >3)
+		modeParam = options[2];
 
 	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
 
@@ -61,6 +62,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		if(mode == modes[i])
 			break;
 	}
+
 	switch (i) {
 		case 0:
 			mode::unsetInvite(channel);
@@ -103,8 +105,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			response += "+l";
 			break;
 		default:
-			Server::unknownCommand(mode, clientFd);
-			response = "";
+			response = "Invalid mode";
 			break;
 	}
 	response += " " + modeParam + "\r\n";

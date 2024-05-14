@@ -1,8 +1,9 @@
 #include "../../headers/mainHeader.hpp"
 
 void Server::quit(std::vector<std::string> options, int userFD) {
-	std::string channel= options[0];
+	std::string reason = options[0];
 	User* user = Server::getUserByFD(userFD);
-	
-	std::cout << user->getNickName() << ":" << "Quittin" << channel << std::endl;
+	std::string response = ":" + user->getNickName() +"QUIT :Quit: " + reason + "\r\n";
+	send(userFD, response.c_str(), response.size(), 0);
+	clearUsers(userFD);
 }

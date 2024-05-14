@@ -21,7 +21,6 @@ class User {
 		std::string	_realName;
 		std::string _userName;
 		std::string _password;
-
 	public:
 		//Getters and Setters
 		std::string	clientBuff;

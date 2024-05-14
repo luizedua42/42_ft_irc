@@ -53,13 +53,11 @@ void Server::selectOptions(std::string buff, int userFD) {
 		if(client->isAuth() == false) {
 			if (i != 0 && i != 1 && i != 2 && i != 11) {
 				std::string response = "You have not registered\r\n";
-				std::cout << "Sending response: " << response << std::endl;
 				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 		}
 		std::string parsedOptions = splittedBuff[0].substr(splittedBuff[0].find_first_of(" ") + 1);
-		std::cout << "options: " << options << std::endl;
 		switch (i) {
 			case 0:
 				cap(userFD);
