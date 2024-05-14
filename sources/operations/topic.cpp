@@ -10,7 +10,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 
 	if (options.size() == 1) {
 		if(channelPtr->getTopic().size() == 0) {
-			response = IRC + RPL_NOTOPICNBR + user->getNickName() + " " + channelName + " :No topic is set." + END;
+			response = IRC + RPL_NOTOPICNBR + user->getNickName() + " " + channelName + RPL_NOTOPIC + END;
 			if(send (clientFd, response.c_str(), response.size(), 0) == -1)
 				std::cerr << "Error sending message" << std::endl;
 			return;
@@ -40,8 +40,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 			send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
 		}
 	} else {
-		response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + " "+ channelName +" TOPIC :Wrong number of parameters" + END;
-		
+		response = IRC + ERR_NEEDMOREPARAMSNBR + " TOPIC " + ERR_NEEDMOREPARAMS + END;		
 		send(clientFd, response.c_str(), response.size(), 0);
 	}
 }

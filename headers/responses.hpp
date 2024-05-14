@@ -47,7 +47,7 @@
 # define RPL_AWAY std::string(" <nick> :<away message> ")
 # define RPL_ENDOFWHO std::string(" :End of /WHO list ")
 # define RPL_CHANNELMODEIS std::string(" <channel> <mode> <mode params> ")
-# define RPL_NOTOPIC std::string(" <channel> :No topic is set ")
+# define RPL_NOTOPIC std::string(" :No topic is set ")
 # define RPL_INVITING std::string(" <channel> <nick> ")
 # define RPL_BANLIST std::string(" <channel> <banid> ")
 # define RPL_ENDOFBANLIST std::string(" <channel> :End of channel ban list ")
