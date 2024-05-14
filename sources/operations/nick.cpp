@@ -3,7 +3,7 @@
 void Server::nick(std::vector<std::string> options, int userFD) {
 	std::string response;
 	if(options.size() < 1){
-		response = IRC + " 431 :No nickname given" + END;
+		response = IRC + ERR_NONICKNAMEGIVENNBR + ERR_NONICKNAMEGIVEN + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
@@ -13,12 +13,12 @@ void Server::nick(std::vector<std::string> options, int userFD) {
 
 	std::string nickname = options[0].substr(0, options[0].find('\r'));
 	if(nickname.empty()) {
-		response = IRC + " 432 :Erroneous nickname" + END;
+		response = IRC + ERR_ERRONEUSNICKNAMENBR + nickname + ERR_ERRONEUSNICKNAME + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
 	if(getUserByNick(nickname) != NULL) {
-		response = IRC + " 433 " + nickname + " :Nickname is already in use" + END;
+		response = IRC + ERR_NICKNAMEINUSENBR + nickname + ERR_NICKNAMEINUSE + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}

@@ -108,6 +108,6 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			response = "Invalid mode";
 			break;
 	}
-	response += " " + modeParam + "\r\n";
+	response += " " + modeParam + END;
 	send(clientFd, response.c_str(), response.size(), 0);
 }
