@@ -5,7 +5,7 @@ GREEN	= \033[1;32m
 RED		= \033[0;31m
 RESET	= \033[0m
 C++		= c++
-CFLAGS	= -Wall -Werror -Wextra -std=c++98
+CFLAGS	= -Wall -Werror -Wextra -std=c++98 -g3
 
 HEADERS = ./headers/mainHeader.hpp\
 		./headers/Channel.hpp\

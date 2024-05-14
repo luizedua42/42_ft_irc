@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 void Server::who(std::vector<std::string> options, int userFD) {
 	std::string response;
@@ -9,10 +9,11 @@ void Server::who(std::vector<std::string> options, int userFD) {
 	std::vector<User *> users = channelPtr->getAllUsers();
 	for (size_t i = 0; i < users.size(); i++) {
 		std::string flags = "H ";
-		// if ((*it).isUserOperator(users[i]))
+		if (channelPtr->isUserOperator(users[i]->getNickName()))
 			flags += "@ ";
 		response = IRC + RPL_WHOREPLYNBR + channelName + " " + users[i]->getUserName() + "42sp.org.br ft_irc " + 
 			users[i]->getNickName() + " " + flags + ":0" + users[i]->getRealName() + END;
+		std::cout << response << std::endl;
 		if(send (userFD, response.c_str(), response.size(), 0) == -1)
 			std::cerr << "Error sending message" << std::endl;
 	}

@@ -26,7 +26,7 @@ class Server{
 	public:
 		//Methods
 		void						listenUser(int userFD);
-		void						acceptNewUser(const char* nickName);
+		void						acceptNewUser(void);
 		void						clearUsers(int userFD);
 		void						closeFds();
 		bool						channelExists(const std::string &channelName) const;
@@ -49,6 +49,7 @@ class Server{
 		//Commands
 		
 		void						createChannel(std::string channelName);
+		void						removeChannel(std::string channelName);
 		void						selectOptions(std::string buff, int userFD);
 		std::vector<std::string>	parseOptions(std::string buff);
 		void 						unknownCommand(std::string command, int userFD);

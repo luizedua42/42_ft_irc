@@ -63,6 +63,20 @@ void Channel::setName(const std::string& name) {
 
 void Channel::addUser(User* User) {
 	_users.insert(std::make_pair(User->getNickName(), User));
+	incrementUserCount();
+}
+
+void Channel::addToInviteList(const std::string nickname) {
+    _inviteList.push_back(nickname);
+}
+
+void Channel::removeFromInviteList(const std::string nickname) {
+    for (std::vector<std::string>::iterator it = _inviteList.begin(); it != _inviteList.end(); ++it) {
+        if (*it == nickname) {
+            _inviteList.erase(it);
+            break;
+        }
+    }
 }
 
 bool Channel::removeUser(const std::string& nickname) {
@@ -81,10 +95,8 @@ Channel::Channel(const std::string& name) : _name(name) {
 	_topic = "";
 	initModes(_modes);
 	_password = "";
+	_userCount = 0;
 	_userLimit = MAX_USERS;
-	_inviteList.clear();
-	_users.clear();
-	_operators.clear();
 }
 
 Channel::~Channel(void) {
@@ -150,4 +162,16 @@ bool Channel::isUserOnChannel(const std::string userNickname) const {
     bool isUserOperator = (_operators.find(userNickname) != _operators.end());
 
     return isUserOnChannel || isUserOperator;
+}
+
+int Channel::getUserCount() const {
+	return _userCount;
+}
+
+void Channel::decrementUserCount(void) {
+	_userCount--;
+}
+
+void Channel::incrementUserCount(void) {
+	_userCount++;
 }

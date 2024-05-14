@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 static bool isValidChannelName(const std::string& channelName) {
     if (channelName.empty() || channelName[0] != '#') {
@@ -40,10 +40,14 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		}
 
 		Channel* channelPtr = getChannel(channels[i]);
-		if (channelPtr->getModes("i") == true && !channelPtr->isUserInvited(user->getNickName())) {
-			response = IRC + ERR_INVITEONLYCHANNBR + channels[i] + ERR_INVITEONLYCHAN + END;
-			send(userFD, response.c_str(), response.size(), 0);
-			continue;
+		if (channelPtr->getModes("i") == true) {
+			if (!channelPtr->isUserInvited(user->getNickName())) {
+				response = IRC + ERR_INVITEONLYCHANNBR + channels[i] + ERR_INVITEONLYCHAN + END;
+				send(userFD, response.c_str(), response.size(), 0);
+				continue;
+			} else {
+				channelPtr->removeFromInviteList(user->getNickName());
+			}
 		}
 
 		std::string password = channelPtr->getPassword();
@@ -53,7 +57,13 @@ void Server::join(std::vector<std::string> options, int userFD) {
 			continue;
 		}
 
-		channelPtr->addUser(user);
+		if(channelPtr->getUserCount() < channelPtr->getUserLimit()) {
+			channelPtr->addUser(user);
+		} else {
+			response = IRC + ERR_CHANNELISFULLNBR + channels[i] + ERR_CHANNELISFULL + END;
+			send(userFD, response.c_str(), response.size(), 0);
+			continue;
+		}
 		if (isUserOperator) {
 			channelPtr->promoteToOperator(user->getNickName());
 		}

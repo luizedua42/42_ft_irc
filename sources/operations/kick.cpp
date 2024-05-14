@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 void Server::kick(std::vector<std::string> options, int userFD) {
 	User* user = getUserByFD(userFD);
@@ -11,8 +11,8 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 
 	std::string kickReason;
     const std::string& channelName = options[0];
-    const std::string& userToBeKicked = options[1];
-
+	const std::string& userToBeKicked = options[1];
+	
 	if (options.size() == 3) { 
 		kickReason = options[2].substr(1);
 	} else {

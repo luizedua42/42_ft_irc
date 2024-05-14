@@ -1,12 +1,10 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 namespace mode {
 	void setOp(Channel* channel, std::string user) {
-		std::cout << "Setting operator: " << user << std::endl;
 		channel->promoteToOperator(user);
 	}
 	void unsetOp(Channel* channel, std::string user) {
-		std::cout << "Unsetting operator: " << user << std::endl;
 		channel->demoteFromOperator(user);
 	}
 	void setTopic(Channel* channel) {
@@ -40,59 +38,76 @@ namespace mode {
 }
 
 void Server::mode(std::vector<std::string> options, int clientFd) {
+	std::string response;
+	std::string mode;
 	if(options.size() < 2 || options.size() > 3){
-		std::cerr << "Invalid number of arguments" << std::endl;
+		response = "Usage: /mode <channel> <mode> [param]\r\n";
+		send(clientFd, response.c_str(), response.size(), 0);
 		return;
 	}
-
+	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
-	
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
-	std::string mode = options[1].substr(0, options[1].find('\r'));
+	if(options.size() > 2)
+		mode = options[1].substr(0, options[1].find('\r'));
 	std::string modeParam = "";
-	if (options.size() == 3){
-		modeParam = options[2].substr(0, options[2].find('\r'));
-	}
-	// std::cout << "User: " << user->getNickName() <<" Setting mode: " << mode << " in channel: " << channelName << ". Param: " << modeParam << std::endl;
+	if(options.size() >3)
+		modeParam = options[2];
+
+	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
+
 	for(; i < 10; i++) {
 		if(mode == modes[i])
 			break;
 	}
+
 	switch (i) {
 		case 0:
 			mode::unsetInvite(channel);
+			response += "-i";
 			break;
 		case 1:
 			mode::setInvite(channel);
+			response += "+i";
 			break;
 		case 2:
 			mode::unsetTopic(channel);
+			response += "-t";
 			break;
 		case 3:
 			mode::setTopic(channel);
+			response += "+t";
 			break;
 		case 4:
+			response += "-k";
 			mode::unsetKey(channel);
 			break;
 		case 5:
+			response += "+k";
 			mode::setKey(channel, modeParam);
 			break;
 		case 6:
 			mode::unsetOp(channel, modeParam);
+			response += "-o";
 			break;
 		case 7:
 			mode::setOp(channel, modeParam);
+			response += "+o";
 			break;
 		case 8:
 			mode::unsetLimit(channel);
+			response += "-l";
 			break;
 		case 9:
 			mode::setLimit(channel, modeParam);
+			response += "+l";
 			break;
 		default:
-			Server::unknownCommand(mode, clientFd);
+			response = "Invalid mode";
 			break;
 	}
+	response += " " + modeParam + "\r\n";
+	send(clientFd, response.c_str(), response.size(), 0);
 }

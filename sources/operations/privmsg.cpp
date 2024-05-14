@@ -1,4 +1,4 @@
-#include "../headers/mainHeader.hpp"
+#include "../../headers/mainHeader.hpp"
 
 std::string messageCat(std::vector<std::string> options) {
 	std::string message;

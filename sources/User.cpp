@@ -15,6 +15,10 @@ void User::setuserFD(int userFD) {
 	_userFD = userFD;
 }
 
+void User::setUserName(std::string userName) {
+	_userName = userName;
+}
+
 void User::setRealName(std::string realName) {
 	_realName = realName;
 }
@@ -47,7 +51,7 @@ std::string User::getuserIP() {
 	return _userIP;
 }
 
-User::User(const char* nickName) : _nickName(nickName), _realName("realname"), _userName(nickName), _isAuth(false) {
+User::User(const int userFD) : _userFD(userFD), _nickName(""), _realName(""), _userName(""), _password("") {
 }
 
 std::string User::getPassword() {
@@ -58,10 +62,9 @@ void User::setPassword(std::string password) {
 	_password = password;
 }
 
-void User::setIsAuth(bool isAuth) {
-	_isAuth = isAuth;
-}
 
-bool User::getIsAuth() {
-	return _isAuth;
+bool User::isAuth() {
+	if(this->_userName.empty() || this->_nickName.empty() || this->_password.empty())
+		return false;
+	return true;
 }

@@ -44,7 +44,7 @@ void Server::setupServer() {
 		for(size_t i = 0 ; i < _fds.size(); i++) {
 			if(_fds[i].revents & POLLIN) {
 				if(_fds[i].fd == _sockfd)
-					acceptNewUser("User1");
+					acceptNewUser();
 				else {
 					listenUser(_fds[i].fd);
 				}
@@ -111,8 +111,7 @@ void Server::setupSocket() {
 	_fds.push_back(newPoll);
 }
 
-void Server::acceptNewUser(const char* nickName) {
-	User User(nickName);
+void Server::acceptNewUser(void) {
 	struct sockaddr_in cliAdd;
 	struct pollfd newPoll;
 	socklen_t clilen = sizeof(cliAdd);
@@ -129,7 +128,7 @@ void Server::acceptNewUser(const char* nickName) {
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 	
-	User.setuserFD(newsockfd);
+	User User(newsockfd);
 	User.setuserIP(inet_ntoa(cliAdd.sin_addr));
 	_Users.push_back(User);
 	_fds.push_back(newPoll);
@@ -205,7 +204,15 @@ void Server::createChannel(const std::string channelName) {
 	_channels.push_back(newChannel);
 }
 
-// std::string response = "CAP * LS :\r\n";
-// send(newsockfd, response.c_str(), response.size(), 0);
-// recv(newsockfd, buff, 100000, 0);
-// std::cout << buff;
+void Server::removeChannel(const std::string channelName) {
+	if (_channels.empty()) {
+		return;
+	}
+
+	for(size_t i = 0; i < _channels.size(); i++) {
+		if (_channels[i].getName() == channelName) {
+			_channels.erase(_channels.begin() + i);
+			break;
+		}
+	}
+}
