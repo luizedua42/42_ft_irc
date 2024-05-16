@@ -40,20 +40,19 @@ namespace mode {
 void Server::mode(std::vector<std::string> options, int clientFd) {
 	std::string response;
 	std::string mode;
-	if(options.size() < 2 || options.size() > 3){
-		response = "Usage: /mode <channel> <mode> [param]\r\n";
-		send(clientFd, response.c_str(), response.size(), 0);
+	if(options.size() == 1) {
+		std::cout << "/mode handle" << std::endl;
 		return;
 	}
+	
 	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
-	if(options.size() > 2)
-		mode = options[1].substr(0, options[1].find('\r'));
+	mode = options[1].substr(0, options[1].find('\r'));
 	std::string modeParam = "";
-	if(options.size() >3)
+	if(options.size() > 3)
 		modeParam = options[2];
 
 	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
@@ -109,5 +108,6 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			break;
 	}
 	response += " " + modeParam + END;
+	std::cout << "RESPONSE::" << response << std::endl;
 	send(clientFd, response.c_str(), response.size(), 0);
 }
