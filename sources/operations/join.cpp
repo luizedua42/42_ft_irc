@@ -42,7 +42,7 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		Channel* channelPtr = getChannel(channels[i]);
 		if (channelPtr->getModes("i") == true) {
 			if (!channelPtr->isUserInvited(user->getNickName())) {
-				response = IRC + ERR_INVITEONLYCHANNBR + channels[i] + ERR_INVITEONLYCHAN + END;
+				response = IRC + ERR_INVITEONLYCHANNBR + channels[i] + " " + channels[i] + ERR_INVITEONLYCHAN + END;
 				send(userFD, response.c_str(), response.size(), 0);
 				continue;
 			} else {

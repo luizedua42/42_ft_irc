@@ -6,6 +6,11 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 	std::string channelName = options[0];
 	
 	Channel* channelPtr = getChannel(channelName);
+	if (channelPtr == NULL) {
+		response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
+		send(clientFd, response.c_str(), response.size(), 0);
+		return;
+	}
 	User* user = Server::getUserByFD(clientFd);
 
 	if (options.size() == 1) {
