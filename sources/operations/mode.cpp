@@ -92,20 +92,20 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 5:
 			response += "+k";
 			if (modeParam == "") {
-				std::cout << "#neves k * :You must specify a parameter for the key mode. Syntax: <key>." << std::endl;
+				std::cout << "<channel> k * :You must specify a parameter for the key mode. Syntax: <key>." << std::endl;
 			}
 			mode::setKey(channel, modeParam);
 			break;
 		case 6:
 			if (modeParam == "") {
-				std::cout << "#neves o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+				std::cout << "<channel> o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
 			}
 			mode::unsetOp(channel, modeParam);
 			response += "-o";
 			break;
 		case 7:
 			if (modeParam == "") {
-				std::cout << "#neves o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+				std::cout << "<channel> o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
 			}
 			mode::setOp(channel, modeParam);
 			response += "+o";
@@ -116,7 +116,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			break;
 		case 9:
 			if (modeParam == "") {
-				std::cout << "#neves l * :You must specify a parameter for the limit mode. Syntax: <limit>." << std::endl;
+				std::cout << "<channel> l * :You must specify a parameter for the limit mode. Syntax: <limit>." << std::endl;
 			}
 			mode::setLimit(channel, modeParam);
 			response += "+l";
