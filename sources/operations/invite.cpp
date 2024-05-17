@@ -14,7 +14,13 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
     Channel* channelPtr = getChannel(channelName);
 
     if (channelPtr == NULL) {
-        response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
+		response = IRC + ERR_NOSUCHCHANNELNBR;
+		if (channelName != "") {
+	        response += channelName;
+		} else {
+			response += "!";
+		}
+		response += ERR_NOSUCHCHANNEL + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
@@ -55,7 +61,6 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 		response = ":" + user->getNickName() + " INVITE " + invitedUserNick + " " + channelName + END;
 		int invitedFD = invitedUser->getuserFD();
 		send(invitedFD, response.c_str(), response.size(), 0);
-
 
 		std::map<std::string, User*> operators = channelPtr->getOperators();
 		for (std::map<std::string, User*>::iterator it = operators.begin(); it != operators.end(); ++it) {
