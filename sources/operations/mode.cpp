@@ -40,19 +40,25 @@ namespace mode {
 void Server::mode(std::vector<std::string> options, int clientFd) {
 	std::string response;
 	std::string mode;
-	if(options.size() == 1) {
-		std::cout << "/mode handle" << std::endl;
-		return;
-	}
 	
 	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
+
+	for (size_t i = 0; i < options.size(); i++)
+		std::cout << "options[" << i << "] = (" << options[i] << ")" << std::endl;
+	if(options.size() == 1 || options[1] == "") {
+		std::string modes = channel->getAllModes();
+		response = IRC + RPL_CHANNELMODEISNBR + user->getNickName() + " " + channelName + " " + modes + END;
+		send(clientFd, response.c_str(), response.size(), 0);
+		return;
+	}
+
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
 	mode = options[1].substr(0, options[1].find('\r'));
 	std::string modeParam = "";
-	if(options.size() > 3)
+	if(options.size() > 2)
 		modeParam = options[2];
 
 	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
@@ -85,13 +91,22 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			break;
 		case 5:
 			response += "+k";
+			if (modeParam == "") {
+				std::cout << "#neves k * :You must specify a parameter for the key mode. Syntax: <key>." << std::endl;
+			}
 			mode::setKey(channel, modeParam);
 			break;
 		case 6:
+			if (modeParam == "") {
+				std::cout << "#neves o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+			}
 			mode::unsetOp(channel, modeParam);
 			response += "-o";
 			break;
 		case 7:
+			if (modeParam == "") {
+				std::cout << "#neves o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+			}
 			mode::setOp(channel, modeParam);
 			response += "+o";
 			break;
@@ -100,6 +115,9 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			response += "-l";
 			break;
 		case 9:
+			if (modeParam == "") {
+				std::cout << "#neves l * :You must specify a parameter for the limit mode. Syntax: <limit>." << std::endl;
+			}
 			mode::setLimit(channel, modeParam);
 			response += "+l";
 			break;
@@ -108,6 +126,6 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			break;
 	}
 	response += " " + modeParam + END;
-	std::cout << "RESPONSE::" << response << std::endl;
+	std::cout << "RESPONSE = " << response << std::endl;
 	send(clientFd, response.c_str(), response.size(), 0);
 }

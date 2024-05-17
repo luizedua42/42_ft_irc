@@ -27,7 +27,7 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 	} else if (options.size() > 1) {
 		std::string topic = options[1].substr(1);
 
-		if(channelPtr->getModes("t") == true && !channelPtr->isUserOperator(user->getNickName())) {
+		if(channelPtr->getMode("t") == true && !channelPtr->isUserOperator(user->getNickName())) {
 			response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
 			send(clientFd, response.c_str(), response.size(), 0);
 			return;
