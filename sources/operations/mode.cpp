@@ -159,6 +159,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			}
 
 			mode::setOp(channel, modeParam);
+			sendNames(paramUser, channel);
 			response += "+o";
 			break;
 

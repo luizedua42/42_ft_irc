@@ -73,16 +73,6 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		if(channelPtr->getTopic() != "")
 			response += ":" + user->getNickName() + " TOPIC " + channels[i] + " :" + channelPtr->getTopic() + END;
 		send(userFD, response.c_str(), response.size(), 0);
-		
-		std::string names = channelPtr->getChannelUsersList();
-		
-		response = ":" + IRC + " 353 " + user->getNickName() + " = " + channels[i] + " : " + names + END;
-
-		response += IRC + " 366 " + user->getNickName() + " " + channels[i] + " : End of names list" + END;
-		//send to all users in the channel
-		std::vector<User*> users = channelPtr->getAllUsers();
-		for (size_t i = 0; i < users.size(); i++) {
-			send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
-		}
+		sendNames(user, channelPtr);
 	}
 }
