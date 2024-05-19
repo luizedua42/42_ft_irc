@@ -22,7 +22,7 @@ class Channel {
 		void							incrementUserCount(void);
 		void							decrementUserCount(void);
 		int								getUserLimit() const;
-		bool							getModes(std::string mode) const;
+		bool							getMode(std::string mode) const;
 		bool							isUserInvited(const std::string userNickname) const;
 		bool							isUserOperator(const std::string userNickname) const;
 		bool							isUserOnChannel(const std::string userNickname) const;
@@ -44,6 +44,7 @@ class Channel {
 		std::string 					getName() const;
 		std::string						getPassword() const;
 		std::string						getTopic() const;
+		std::string						getAllModes() const;
 		std::map<std::string, User*>	getOperators() const;
 		std::map<std::string, User*>	getNonOperators() const;
 

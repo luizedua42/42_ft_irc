@@ -6,7 +6,7 @@
 // # define RPL_UMODEISNBR std::string(" 221 ")
 // # define RPL_AWAYNBR  std::string(" 301 ")
 # define RPL_ENDOFWHONBR std::string(" 315 ")
-// # define RPL_CHANNELMODEISNBR std::string(" 324 ")
+# define RPL_CHANNELMODEISNBR std::string(" 324 ")
 # define RPL_NOTOPICNBR std::string(" 331 ")
 # define RPL_TOPICNBR std::string(" 332 ")
 # define RPL_INVITINGNBR std::string(" 341 ")
