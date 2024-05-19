@@ -67,7 +67,7 @@
 # define ERR_NONICKNAMEGIVEN std::string(" :No nickname given ")
 // # define ERR_NORECIPIENT std::string(" :No recipient given ")
 # define ERR_NOSUCHCHANNEL std::string(" :No such channel ")
-# define ERR_NOSUCHNICK std::string(" :No such nick/channel ")
+# define ERR_NOSUCHNICK std::string(" :No such nick ")
 // # define ERR_NOSUCHSERVER std::string(" :No such server ")
 // # define ERR_NOTEXTTOSEND std::string(" :No text to send ")
 # define ERR_NOTONCHANNEL std::string(" :You're not on that channel! ")

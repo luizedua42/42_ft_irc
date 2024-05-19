@@ -14,13 +14,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
     Channel* channelPtr = getChannel(channelName);
 
     if (channelPtr == NULL) {
-		response = IRC + ERR_NOSUCHCHANNELNBR;
-		if (channelName != "") {
-	        response += channelName;
-		} else {
-			response += "!";
-		}
-		response += ERR_NOSUCHCHANNEL + END;
+		response = IRC + ERR_NOSUCHCHANNELNBR + "! " + channelName +  ERR_NOSUCHCHANNEL + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
@@ -31,27 +25,28 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 		return;
     }
 
-	if (!channelPtr->isUserOperator(user->getNickName())) {
-		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + channelName + ERR_CHANOPRIVSNEEDED + END;
-		send(userFD, response.c_str(), response.size(), 0);
-		return;
-	}
-
 	std::istringstream iss(options[0]);
 	std::string invitedUserNick;
 	while (std::getline(iss, invitedUserNick, ',')) {
 		User* invitedUser = getUserByNick(invitedUserNick);
 		if (invitedUser == NULL) {
-			response = IRC + ERR_NOSUCHNICKNBR + invitedUserNick + ERR_NOSUCHNICK + END;
+			response = IRC + ERR_NOSUCHNICKNBR + " " + channelName + " " + invitedUserNick + ERR_NOSUCHNICK + END;
+			std::cout << "RESPONSE = " << response << std::endl;
 			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}
 
 		if (channelPtr->isUserOnChannel(invitedUserNick))
 		{
-			response = IRC + ERR_USERONCHANNELNBR + invitedUserNick + " " + channelName + ERR_USERONCHANNEL + END;
+			response = IRC + ERR_USERONCHANNELNBR + channelName + " " + invitedUserNick + " " + channelName + ERR_USERONCHANNEL + END;
 			send(userFD, response.c_str(), response.size(), 0);
 			continue;
+		}
+
+		if (!channelPtr->isUserOperator(user->getNickName())) {
+			response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
+			send(userFD, response.c_str(), response.size(), 0);
+			return;
 		}
 
 		channelPtr->addToInviteList(invitedUserNick);
