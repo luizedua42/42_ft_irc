@@ -44,7 +44,11 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
-
+	if(channel == NULL) {
+		response = IRC + ERR_NOSUCHCHANNELNBR + user->getNickName() + " " + channelName + ERR_NOSUCHCHANNEL + END;
+		send(clientFd, response.c_str(), response.size(), 0);
+		return;
+	}
 	if(options.size() == 1 || options[1] == "") {
 		std::string modes = channel->getAllModes();
 		response = IRC + RPL_CHANNELMODEISNBR + user->getNickName() + " " + channelName + " " + modes + END;
