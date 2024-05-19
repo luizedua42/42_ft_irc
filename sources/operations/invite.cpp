@@ -31,7 +31,6 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 		User* invitedUser = getUserByNick(invitedUserNick);
 		if (invitedUser == NULL) {
 			response = IRC + ERR_NOSUCHNICKNBR + " " + channelName + " " + invitedUserNick + ERR_NOSUCHNICK + END;
-			std::cout << "RESPONSE = " << response << std::endl;
 			send(userFD, response.c_str(), response.size(), 0);
 			continue;
 		}
@@ -59,7 +58,6 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 
 		std::map<std::string, User*> operators = channelPtr->getOperators();
 		for (std::map<std::string, User*>::iterator it = operators.begin(); it != operators.end(); ++it) {
-			std::cout << it->first << " is operator" << std::endl;
 			send(it->second->getuserFD(), response.c_str(), response.size(), 0);
 		}
 	}
