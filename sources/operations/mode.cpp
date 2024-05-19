@@ -111,6 +111,12 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 				return;
 			}
 
+			if (!channel->isUserOperator(user->getNickName())) {
+				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
 			if (paramUser == NULL) {
 				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
 				send(clientFd, response.c_str(), response.size(), 0);
@@ -128,6 +134,12 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 7:
 			if (modeParam == "") {
 				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOperator(user->getNickName())) {
+				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
 				send(clientFd, response.c_str(), response.size(), 0);
 				return;
 			}
