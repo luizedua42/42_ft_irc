@@ -185,3 +185,15 @@ void Channel::decrementUserCount(void) {
 void Channel::incrementUserCount(void) {
 	_userCount++;
 }
+
+std::string Channel::getChannelUsersList() const {
+	std::string usersList;
+	for (std::map<std::string, User*>::const_iterator it = _users.begin(); it != _users.end(); it++) {
+		usersList += it->first + " ";
+	}
+	for (std::map<std::string, User*>::const_iterator it = _operators.begin(); it != _operators.end(); it++) {
+		usersList += '@';
+		usersList += it->first + " ";
+	}
+	return usersList;
+}
