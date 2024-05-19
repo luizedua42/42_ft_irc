@@ -20,19 +20,23 @@ namespace mode {
 		channel->setMode("i", false);
 	}
 	void setKey(Channel* channel, std::string key) {
+		channel->setMode("k", true);
 		channel->setPassword(key);
 	}
 	void unsetKey(Channel* channel) {
 		std::string key = "";
+		channel->setMode("k", false);
 		channel->setPassword(key);
 	}
 	void setLimit(Channel* channel, std::string param) {
+		channel->setMode("l", true);
 		std::stringstream ss(param);
 		int limit;
 		ss >> limit;
 		channel->setUserLimit(limit);
 	}
 	void unsetLimit(Channel* channel) {
+		channel->setMode("l", false);
 		channel->setUserLimit(MAX_USERS);
 	}
 }
