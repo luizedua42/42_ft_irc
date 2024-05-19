@@ -47,6 +47,7 @@ class Channel {
 		std::string						getAllModes() const;
 		std::map<std::string, User*>	getOperators() const;
 		std::map<std::string, User*>	getNonOperators() const;
+		std::string						getChannelUsersList() const;
 
 		Channel(const std::string& name);
 		~Channel();
