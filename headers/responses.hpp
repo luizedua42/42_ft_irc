@@ -70,7 +70,7 @@
 # define ERR_NOSUCHNICK std::string(" :No such nick/channel ")
 // # define ERR_NOSUCHSERVER std::string(" :No such server ")
 // # define ERR_NOTEXTTOSEND std::string(" :No text to send ")
-# define ERR_NOTONCHANNEL std::string(" :You're not on that channel ")
+# define ERR_NOTONCHANNEL std::string(" :You're not on that channel! ")
 // # define ERR_NOTOPLEVEL std::string(" :No toplevel domain specified ")
 # define ERR_PASSWDMISMATCH std::string(" :Password incorrect ")
 # define ERR_POLL std::string(" Error on poll ")

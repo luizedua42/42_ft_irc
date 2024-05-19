@@ -26,7 +26,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
     }
 
     if (!channelPtr->isUserOnChannel(user->getNickName())) {
-		response = IRC + ERR_NOTONCHANNELNBR + channelName + ERR_NOTONCHANNEL + END;
+		response = IRC + ERR_NOTONCHANNELNBR + channelName + " " + channelName + ERR_NOTONCHANNEL + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
