@@ -45,8 +45,6 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
 
-	for (size_t i = 0; i < options.size(); i++)
-		std::cout << "options[" << i << "] = (" << options[i] << ")" << std::endl;
 	if(options.size() == 1 || options[1] == "") {
 		std::string modes = channel->getAllModes();
 		response = IRC + RPL_CHANNELMODEISNBR + user->getNickName() + " " + channelName + " " + modes + END;
@@ -60,6 +58,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	std::string modeParam = "";
 	if(options.size() > 2)
 		modeParam = options[2];
+	User* paramUser = getUserByNick(modeParam);
 
 	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
 
@@ -73,59 +72,101 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			mode::unsetInvite(channel);
 			response += "-i";
 			break;
+
 		case 1:
 			mode::setInvite(channel);
 			response += "+i";
 			break;
+
 		case 2:
 			mode::unsetTopic(channel);
 			response += "-t";
 			break;
+
 		case 3:
 			mode::setTopic(channel);
 			response += "+t";
 			break;
+
 		case 4:
-			response += "-k";
 			mode::unsetKey(channel);
+			response += "-k";
 			break;
+
 		case 5:
-			response += "+k";
 			if (modeParam == "") {
-				std::cout << "<channel> k * :You must specify a parameter for the key mode. Syntax: <key>." << std::endl;
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName + " k * :You must specify a parameter for the key mode. Syntax: <key>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
 			}
+
 			mode::setKey(channel, modeParam);
+			response += "+k";
 			break;
+
 		case 6:
 			if (modeParam == "") {
-				std::cout << "<channel> o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
 			}
+
+			if (paramUser == NULL) {
+				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOnChannel(paramUser->getNickName()) || !channel->isUserOperator(paramUser->getNickName())) {
+				return;
+			}
+
 			mode::unsetOp(channel, modeParam);
 			response += "-o";
 			break;
+
 		case 7:
 			if (modeParam == "") {
-				std::cout << "<channel> o * :You must specify a parameter for the op mode. Syntax: <nick>." << std::endl;
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
 			}
+
+			if (paramUser == NULL) {
+				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOnChannel(paramUser->getNickName()) || channel->isUserOperator(paramUser->getNickName())) {
+				return;
+			}
+
 			mode::setOp(channel, modeParam);
 			response += "+o";
 			break;
+
 		case 8:
 			mode::unsetLimit(channel);
 			response += "-l";
 			break;
+
 		case 9:
 			if (modeParam == "") {
-				std::cout << "<channel> l * :You must specify a parameter for the limit mode. Syntax: <limit>." << std::endl;
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " l * :You must specify a parameter for the limit mode. Syntax: <limit>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
 			}
+
 			mode::setLimit(channel, modeParam);
 			response += "+l";
 			break;
+
 		default:
 			response = "Invalid mode";
 			break;
 	}
+
 	response += " " + modeParam + END;
-	std::cout << "RESPONSE = " << response << std::endl;
 	send(clientFd, response.c_str(), response.size(), 0);
 }
