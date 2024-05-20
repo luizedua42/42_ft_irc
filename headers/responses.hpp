@@ -11,7 +11,7 @@
 # define RPL_TOPICNBR std::string(" 332 ")
 # define RPL_INVITINGNBR std::string(" 341 ")
 # define RPL_WHOREPLYNBR std::string(" 352 ")
-# define RPL_NAMREPLYNBR std::string(" 352 ")
+# define RPL_NAMREPLYNBR std::string(" 353 ")
 # define RPL_ENDOFNAMESNBR std::string(" 366 ")
 // # define RPL_BANLISTNBR std::string(" 367 ")
 # define ERR_NOSUCHNICKNBR std::string(" 401 ")
