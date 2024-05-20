@@ -75,6 +75,9 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		
 		std::cout << " Joining channel: " << channels[i] << std::endl;
 		std::string response = ":" + user->getNickName() + " JOIN " + channels[i] + END;
+		if(channelPtr->getTopic() != "")
+			response += ":" + user->getNickName() + " TOPIC " + channels[i] + " :" + channelPtr->getTopic() + END;
 		send(userFD, response.c_str(), response.size(), 0);
+		sendNames(user, channelPtr);
 	}
 }

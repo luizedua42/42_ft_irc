@@ -29,6 +29,7 @@ class Server{
 		void						acceptNewUser(void);
 		void						clearUsers(int userFD);
 		void						closeFds();
+		void						sendNames(User* user, Channel* channel);
 		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
 		

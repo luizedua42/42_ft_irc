@@ -66,16 +66,12 @@ void Server::listenUser(int userFD) {
 		close(userFD);
 		return;
 	}
-	user->clientBuff.clear();
-	if(user->clientBuff.empty()) {
-		user->clientBuff = buff;
-	}
-	else
-		user->clientBuff.append(buff);
+	user->clientBuff.append(buff);
 	if(user->clientBuff.find("\n") == std::string::npos) {
 		return;
 	}
 	Server::selectOptions(user->clientBuff, userFD);
+	user->clientBuff.clear();
 }
 
 void Server::setupSocket() {
@@ -214,5 +210,18 @@ void Server::removeChannel(const std::string channelName) {
 			_channels.erase(_channels.begin() + i);
 			break;
 		}
+	}
+}
+
+void Server::sendNames(User* user, Channel* channelPtr) {
+	std::string response;
+	std::string names = channelPtr->getChannelUsersList();
+
+	response = IRC + " 353 " + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
+	response += IRC + " 366 " + user->getNickName() + " " + channelPtr->getName() + " : End of names list" + END;
+
+	std::vector<User*> users = channelPtr->getAllUsers();
+	for (size_t i = 0; i < users.size(); i++) {
+		send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
 	}
 }
