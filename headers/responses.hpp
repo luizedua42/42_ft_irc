@@ -50,7 +50,7 @@
 
 //error messages
 # define ERR_ACCEPT std::string(" Error on accept ")
-# define ERR_ALREADYREGISTRED std::string(" :You may not reregister")
+# define ERR_ALREADYREGISTERED std::string(" :You may not reregister")
 # define ERR_BADCHANMASK std::string(" :Invalid channel name ")
 // # define ERR_BANNEDFROMCHAN std::string(" :Cannot join channel (+b) ")
 # define ERR_BIND std::string(" Error on bind ")

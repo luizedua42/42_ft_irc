@@ -14,7 +14,7 @@ void Server::pass(std::vector<std::string> options, int userFD) {
 
 	if(!user->getPassword().empty()) {
 
-		response = IRC + ERR_ALREADYREGISTEREDNBR + user->getUserName() + ERR_ALREADYREGISTRED + END;
+		response = IRC + ERR_ALREADYREGISTEREDNBR + user->getUserName() + ERR_ALREADYREGISTERED + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
