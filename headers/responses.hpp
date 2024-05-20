@@ -11,6 +11,8 @@
 # define RPL_TOPICNBR std::string(" 332 ")
 # define RPL_INVITINGNBR std::string(" 341 ")
 # define RPL_WHOREPLYNBR std::string(" 352 ")
+# define RPL_NAMREPLYNBR std::string(" 352 ")
+# define RPL_ENDOFNAMESNBR std::string(" 366 ")
 // # define RPL_BANLISTNBR std::string(" 367 ")
 # define ERR_NOSUCHNICKNBR std::string(" 401 ")
 // # define ERR_NOSUCHSERVERNBR std::string(" 402 ")
@@ -45,7 +47,7 @@
 //reply messages
 # define RPL_ENDOFWHO std::string(" :End of /WHO list ")
 # define RPL_NOTOPIC std::string(" :No topic is set ")
-// # define RPL_ENDOFBANLIST std::string(" :End of channel ban list ")
+# define RPL_ENDOFNAMES std::string(" :End of /NAMES list")
 # define RPL_WELCOME std::string(" :Welcome to the Internet Relay Chat ")
 //error messages
 # define ERR_ACCEPT std::string(" Error on accept ")

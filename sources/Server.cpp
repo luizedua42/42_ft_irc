@@ -217,8 +217,8 @@ void Server::sendNames(User* user, Channel* channelPtr) {
 	std::string response;
 	std::string names = channelPtr->getChannelUsersList();
 
-	response = IRC + " 353 " + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
-	response += IRC + " 366 " + user->getNickName() + " " + channelPtr->getName() + " : End of names list" + END;
+	response = IRC + RPL_NAMREPLYNBR + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
+	response += IRC + RPL_ENDOFNAMESNBR + user->getNickName() + " " + channelPtr->getName() + RPL_ENDOFNAMES + END;
 
 	std::vector<User*> users = channelPtr->getAllUsers();
 	for (size_t i = 0; i < users.size(); i++) {
