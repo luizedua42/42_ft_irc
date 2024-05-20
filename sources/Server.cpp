@@ -221,7 +221,7 @@ void Server::sendNames(User* user, Channel* channelPtr) {
 	std::string response;
 	std::string names = channelPtr->getChannelUsersList();
 
-	response = ":" + IRC + " 353 " + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
+	response = IRC + " 353 " + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
 	response += IRC + " 366 " + user->getNickName() + " " + channelPtr->getName() + " : End of names list" + END;
 	//send to all users in the channel
 	std::vector<User*> users = channelPtr->getAllUsers();
