@@ -26,7 +26,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
     }
 
 	if (!channelPtr->isUserOperator(user->getNickName())) {
-		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + channelName + ERR_NOTONCHANNEL + END;
+		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + channelName + ERR_CHANOPRIVSNEEDED + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
@@ -49,19 +49,18 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 		}
 
 		channelPtr->addToInviteList(invitedUserNick);
-		response = IRC + RPL_INVITINGNBR + channelName + " " + invitedUserNick + END;
+		response = IRC + RPL_INVITINGNBR + channelName + " " + invitedUserNick  + " " + channelName + END;
 		send(userFD, response.c_str(), response.size(), 0);
+
+		response = ":" + user->getNickName() + " INVITE " + invitedUserNick + " " + channelName + END;
 		int invitedFD = invitedUser->getuserFD();
 		send(invitedFD, response.c_str(), response.size(), 0);
 
-		response = IRC + invitedUserNick + " has been invited to " + channelName + " by " + user->getNickName() + END;
-			std::map<std::string, User*> operators = channelPtr->getOperators();
 
+		std::map<std::string, User*> operators = channelPtr->getOperators();
 		for (std::map<std::string, User*>::iterator it = operators.begin(); it != operators.end(); ++it) {
-			if (it->second->getNickName() != user->getNickName()) {
-				if(it->second->getuserFD() != userFD)
-					send(it->second->getuserFD(), response.c_str(), response.size(), 0);
-			}
+			std::cout << it->first << " is operator" << std::endl;
+			send(it->second->getuserFD(), response.c_str(), response.size(), 0);
 		}
 	}
 }
