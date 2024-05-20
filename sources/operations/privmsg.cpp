@@ -18,11 +18,23 @@ std::string messageCat(std::vector<std::string> options) {
 
 void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::string response;
-	std::string channelName = options[0].substr(0, options[0].find(' '));
-	std::cout << "Sending message to channel: " << channelName << std::endl;
-	std::string message = messageCat(options);
-	std::cout << "Message: " << message << std::endl;
 	User* user = Server::getUserByFD(userFD);
+	std::string channelName = options[0].substr(0, options[0].find(' '));
+
+	if (options.size() < 1 || channelName.empty()){
+		response = IRC + ERR_NORECIPIENTNBR + user->getUserName() + ERR_NORECIPIENT + END;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+	}
+
+	if (options.size() < 2 || options[1].empty()) {
+		response = IRC + ERR_NOTEXTTOSENDNBR + user->getUserName() + ERR_NOTEXTTOSEND + END;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+	}
+	std::string message = messageCat(options);
+	std::cout << "Sending message to channel: " << channelName << std::endl;
+	std::cout << "Message: " << message << std::endl;
 
 	Channel* channelPtr = getChannel(channelName);
 	if (channelPtr == NULL && channelName[0] == '#') {
