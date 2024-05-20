@@ -31,7 +31,7 @@
 # define ERR_USERONCHANNELNBR std::string(" 443 ")
 # define ERR_NEEDMOREPARAMSNBR std::string(" 461 ")
 # define ERR_ALREADYREGISTEREDNBR std::string(" 462 ")
-# define ERR_PASSWDMISMATCHNBR std::string(" 464 ")
+# define ERR_PASSWDMISMATCHNBR std::string(" 464 *")
 // # define ERR_KEYSETNBR std::string(" 467 ")
 # define ERR_CHANNELISFULLNBR std::string(" 471 ")
 // # define ERR_UNKNOWNMODENBR std::string(" 472 ")
