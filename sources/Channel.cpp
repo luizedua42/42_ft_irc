@@ -2,7 +2,7 @@
 
 void initModes(std::map<std::string, bool>& modes) {
 	modes["o"] = false;
-	modes["t"] = false;
+	modes["t"] = true;
 	modes["i"] = false;
 	modes["k"] = false;
 	modes["l"] = false;
@@ -49,8 +49,18 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
-bool Channel::getModes(std::string mode) const {
+bool Channel::getMode(std::string mode) const {
 	return this->_modes.at(mode);
+}
+
+std::string Channel::getAllModes() const {
+	std::string modes = "+";
+	if (_modes.at("o")) modes += "o";
+	if (_modes.at("t")) modes += "t";
+	if (_modes.at("i")) modes += "i";
+	if (_modes.at("k")) modes += "k";
+	if (_modes.at("l")) modes += "l";
+	return modes;
 }
 
 std::string Channel::getPassword() const {

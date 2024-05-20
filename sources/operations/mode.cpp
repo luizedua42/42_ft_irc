@@ -20,19 +20,23 @@ namespace mode {
 		channel->setMode("i", false);
 	}
 	void setKey(Channel* channel, std::string key) {
+		channel->setMode("k", true);
 		channel->setPassword(key);
 	}
 	void unsetKey(Channel* channel) {
 		std::string key = "";
+		channel->setMode("k", false);
 		channel->setPassword(key);
 	}
 	void setLimit(Channel* channel, std::string param) {
+		channel->setMode("l", true);
 		std::stringstream ss(param);
 		int limit;
 		ss >> limit;
 		channel->setUserLimit(limit);
 	}
 	void unsetLimit(Channel* channel) {
+		channel->setMode("l", false);
 		channel->setUserLimit(MAX_USERS);
 	}
 }
@@ -40,21 +44,25 @@ namespace mode {
 void Server::mode(std::vector<std::string> options, int clientFd) {
 	std::string response;
 	std::string mode;
-	if(options.size() < 2 || options.size() > 3){
-		response = "Usage: /mode <channel> <mode> [param]\r\n";
-		send(clientFd, response.c_str(), response.size(), 0);
-		return;
-	}
+	
 	User* user = getUserByFD(clientFd);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
+
+	if(options.size() == 1 || options[1] == "") {
+		std::string modes = channel->getAllModes();
+		response = IRC + RPL_CHANNELMODEISNBR + user->getNickName() + " " + channelName + " " + modes + END;
+		send(clientFd, response.c_str(), response.size(), 0);
+		return;
+	}
+
 	int i = 0;
 	std::string modes[] = {"-i", "+i", "-t", "+t", "-k", "+k", "-o", "+o", "-l", "+l"};
-	if(options.size() > 2)
-		mode = options[1].substr(0, options[1].find('\r'));
+	mode = options[1].substr(0, options[1].find('\r'));
 	std::string modeParam = "";
-	if(options.size() >3)
+	if(options.size() > 2)
 		modeParam = options[2];
+	User* paramUser = getUserByNick(modeParam);
 
 	response = ":" + user->getNickName() + "!" + user->getUserName() + "@ft.irc MODE " + channelName + " ";
 
@@ -68,46 +76,113 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			mode::unsetInvite(channel);
 			response += "-i";
 			break;
+
 		case 1:
 			mode::setInvite(channel);
 			response += "+i";
 			break;
+
 		case 2:
 			mode::unsetTopic(channel);
 			response += "-t";
 			break;
+
 		case 3:
 			mode::setTopic(channel);
 			response += "+t";
 			break;
+
 		case 4:
-			response += "-k";
 			mode::unsetKey(channel);
+			response += "-k";
 			break;
+
 		case 5:
-			response += "+k";
+			if (modeParam == "") {
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName + " k * :You must specify a parameter for the key mode. Syntax: <key>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
 			mode::setKey(channel, modeParam);
+			response += "+k";
 			break;
+
 		case 6:
+			if (modeParam == "") {
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOperator(user->getNickName())) {
+				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (paramUser == NULL) {
+				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOnChannel(paramUser->getNickName()) || !channel->isUserOperator(paramUser->getNickName())) {
+				return;
+			}
+
 			mode::unsetOp(channel, modeParam);
 			response += "-o";
 			break;
+
 		case 7:
+			if (modeParam == "") {
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOperator(user->getNickName())) {
+				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (paramUser == NULL) {
+				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
+			if (!channel->isUserOnChannel(paramUser->getNickName()) || channel->isUserOperator(paramUser->getNickName())) {
+				return;
+			}
+
 			mode::setOp(channel, modeParam);
 			response += "+o";
 			break;
+
 		case 8:
 			mode::unsetLimit(channel);
 			response += "-l";
 			break;
+
 		case 9:
+			if (modeParam == "") {
+				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " l * :You must specify a parameter for the limit mode. Syntax: <limit>." + END;
+				send(clientFd, response.c_str(), response.size(), 0);
+				return;
+			}
+
 			mode::setLimit(channel, modeParam);
 			response += "+l";
 			break;
+
 		default:
 			response = "Invalid mode";
 			break;
 	}
+
 	response += " " + modeParam + END;
 	send(clientFd, response.c_str(), response.size(), 0);
 }
