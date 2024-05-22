@@ -1,10 +1,3 @@
-/**======================
-*            42sp
-* @file      : mainHeader.hpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 15/04/2024
-*========================**/
 #pragma once
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP

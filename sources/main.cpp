@@ -1,11 +1,3 @@
-/**======================
-*            42sp
-* @file      : main.c
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 16/04/2024
-*========================**/
-
 #include "../headers/mainHeader.hpp"
 
 int main(int ac, char **av) {
@@ -18,9 +10,10 @@ int main(int ac, char **av) {
 	server.setPort(av[1]);
 	server.setPassword(av[2]);
 
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, server.handleSig);
+	signal(SIGQUIT, server.handleSig);
 	try {
-		signal(SIGINT, server.handleSig);
-		signal(SIGQUIT, server.handleSig);
 		server.setupServer();
 	} catch (std::exception &e) {
 		std::cerr << e.what() << std::endl;

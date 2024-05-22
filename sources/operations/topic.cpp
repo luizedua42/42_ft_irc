@@ -1,6 +1,6 @@
 #include "../../headers/mainHeader.hpp"
 
-void Server::topic(std::vector<std::string> options, int clientFd) {
+void Server::topic(std::vector<std::string> options, int userFD) {
 	std::string response;
 	
 	std::string channelName = options[0];
@@ -8,28 +8,28 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 	Channel* channelPtr = getChannel(channelName);
 	if (channelPtr == NULL) {
 		response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
-		send(clientFd, response.c_str(), response.size(), 0);
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
-	User* user = Server::getUserByFD(clientFd);
+	User* user = Server::getUserByFD(userFD);
 
-	if (options.size() == 1) {
+	if (options.size() == 1 || options[1] == "") {
 		if(channelPtr->getTopic().size() == 0) {
 			response = IRC + RPL_NOTOPICNBR + user->getNickName() + " " + channelName + RPL_NOTOPIC + END;
-			if(send (clientFd, response.c_str(), response.size(), 0) == -1)
+			if(send (userFD, response.c_str(), response.size(), 0) == -1)
 				std::cerr << "Error sending message" << std::endl;
 			return;
 		}
 		
 		response = IRC + RPL_TOPICNBR + user->getNickName() + " " + channelName + " :" + channelPtr->getTopic() + END;
-		send(clientFd, response.c_str(), response.size(), 0);
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	} else if (options.size() > 1) {
 		std::string topic = options[1].substr(1);
 
 		if(channelPtr->getMode("t") == true && !channelPtr->isUserOperator(user->getNickName())) {
 			response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
-			send(clientFd, response.c_str(), response.size(), 0);
+			send(userFD, response.c_str(), response.size(), 0);
 			return;
 		}
 
@@ -44,6 +44,6 @@ void Server::topic(std::vector<std::string> options, int clientFd) {
 		}
 	} else {
 		response = IRC + ERR_NEEDMOREPARAMSNBR + " TOPIC " + ERR_NEEDMOREPARAMS + END;		
-		send(clientFd, response.c_str(), response.size(), 0);
+		send(userFD, response.c_str(), response.size(), 0);
 	}
 }

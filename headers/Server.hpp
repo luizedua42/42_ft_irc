@@ -1,10 +1,3 @@
-/**======================
-*            42sp
-* @file      : Server.hpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 17/04/2024
-*========================**/
 #pragma once
 #ifndef SERVER_HPP
 # define SERVER_HPP
@@ -20,24 +13,21 @@ class Server{
 		static bool					_signal;
 		std::string					_password;
 		std::vector<Channel>		_channels;
-		std::vector<User>			_Users;
+		std::vector<User*>			_Users;
 		std::vector<struct pollfd>	_fds;
 
 	public:
-		//Methods
 		void						listenUser(int userFD);
 		void						acceptNewUser(void);
 		void						clearUsers(int userFD);
 		void						closeFds();
-		void						sendNames(User* user, Channel* channel);
+		void						freeUsers();
 		bool						channelExists(const std::string &channelName) const;
 		static void					handleSig(int signum);
 		
-		//Setup
 		void		setupSocket();
 		void		setupServer();
 		
-		//Getters
 		Channel *			getChannel(const std::string& channelName);
 		int					getPort();
 		void				setPort(char *input);
@@ -45,13 +35,11 @@ class Server{
 		std::string			getPassword();
 		User*				getUserByFD(int userFD);
 		User* 				getUserByNick(std::string nickName);
-		std::vector<User>	getUserVector();
+		std::vector<User*>	getUserVector();
 
-		//Commands
-		
 		void						createChannel(std::string channelName);
 		void						removeChannel(std::string channelName);
-		void						selectOptions(std::string buff, int userFD);
+		void						selectOptions(std::string& buff, int userFD);
 		std::vector<std::string>	parseOptions(std::string buff);
 		void 						unknownCommand(std::string command, int userFD);
 
@@ -66,7 +54,7 @@ class Server{
 		void		invite(std::vector<std::string>, int fd);
 		void		kick(std::vector<std::string>, int fd);
 		void		who(std::vector<std::string>, int fd);
-		void		pass(std::vector<std::string>, int fd);
+		bool		pass(std::vector<std::string>, int fd);
 		void		part(std::vector<std::string>, int fd);
 };
 

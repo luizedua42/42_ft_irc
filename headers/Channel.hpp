@@ -32,8 +32,8 @@ class Channel {
 		void 							removeFromInviteList(const std::string nickname);
 		void							setMode(std::string mode, bool value);
 		void							setName(const std::string& name);
-		void							promoteToOperator(std::string userNickname); //add to operator, remove from user
-		void							demoteFromOperator(std::string userNickname); //add to user, remove from operator
+		void							promoteToOperator(std::string userNickname);
+		void							demoteFromOperator(std::string userNickname);
 		void							listUsers() const;
 		void							listOperators() const;
 		void							setMode(const std::string& mode);

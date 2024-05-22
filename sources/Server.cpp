@@ -1,11 +1,3 @@
-/**======================
-*            42sp
-* @file      : Server.cpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 17/04/2024
-*========================**/
-
 #include "../headers/mainHeader.hpp"
 #include "../headers/Server.hpp"
 
@@ -52,6 +44,7 @@ void Server::setupServer() {
 		}
 	}
 	closeFds();
+	freeUsers();
 }
 
 void Server::listenUser(int userFD) {
@@ -60,18 +53,17 @@ void Server::listenUser(int userFD) {
 	bzero(buff, 513);
 
 	ssize_t byte = recv(userFD, buff, 513, 0);
-	if(byte < 0){
+	if (byte < 0) {
 		user->clientBuff.clear();
 		Server::clearUsers(userFD);
 		close(userFD);
 		return;
 	}
 	user->clientBuff.append(buff);
-	if(user->clientBuff.find("\n") == std::string::npos) {
+	if (user->clientBuff.find("\n") == std::string::npos) {
 		return;
 	}
 	Server::selectOptions(user->clientBuff, userFD);
-	user->clientBuff.clear();
 }
 
 void Server::setupSocket() {
@@ -124,9 +116,9 @@ void Server::acceptNewUser(void) {
 	newPoll.events = POLLIN;
 	newPoll.revents = 0;
 	
-	User User(newsockfd);
-	User.setuserIP(inet_ntoa(cliAdd.sin_addr));
-	_Users.push_back(User);
+	User* user = new User(newsockfd);
+	user->setuserIP(inet_ntoa(cliAdd.sin_addr));
+	_Users.push_back(user);
 	_fds.push_back(newPoll);
 }
 
@@ -138,7 +130,7 @@ void Server::clearUsers(int userFD) {
 		}
  }
 	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getuserFD() == userFD) {
+		if (_Users[i]->getuserFD() == userFD) {
 			_Users.erase(_Users.begin() + i);
 			break;
 		}
@@ -147,10 +139,16 @@ void Server::clearUsers(int userFD) {
 
 void Server::closeFds() {
 	for(size_t i = 0; i < _Users.size(); i++) {
-			close(_Users[i].getuserFD());
+			close(_Users[i]->getuserFD());
 	}
 	if(_sockfd != -1)
 		close(_sockfd);
+}
+
+void Server::freeUsers() {
+	for(size_t i = 0; i < _Users.size(); i++) {
+		delete _Users[i];
+	}
 }
 
 bool Server::_signal = true;
@@ -161,8 +159,8 @@ void Server::handleSig(int signum) {
 
 User* Server::getUserByFD(int userFD) {
 	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getuserFD() == userFD) {
-			return &_Users[i];
+		if (_Users[i]->getuserFD() == userFD) {
+			return _Users[i];
 		}
 	}
 	return NULL;
@@ -170,8 +168,8 @@ User* Server::getUserByFD(int userFD) {
 
 User* Server::getUserByNick(std::string nickName) {
 	for(size_t i = 0; i < _Users.size(); i++) {
-		if (_Users[i].getNickName() == nickName) {
-			return &_Users[i];
+		if (_Users[i]->getNickName() == nickName) {
+			return _Users[i];
 		}
 	}
 	return NULL;
@@ -213,15 +211,6 @@ void Server::removeChannel(const std::string channelName) {
 	}
 }
 
-void Server::sendNames(User* user, Channel* channelPtr) {
-	std::string response;
-	std::string names = channelPtr->getChannelUsersList();
-
-	response = IRC + RPL_NAMREPLYNBR + user->getNickName() + " = " + channelPtr->getName() + " : " + names + END;
-	response += IRC + RPL_ENDOFNAMESNBR + user->getNickName() + " " + channelPtr->getName() + RPL_ENDOFNAMES + END;
-
-	std::vector<User*> users = channelPtr->getAllUsers();
-	for (size_t i = 0; i < users.size(); i++) {
-		send(users[i]->getuserFD(), response.c_str(), response.size(), 0);
-	}
+std::vector<User*> Server::getUserVector() {
+	return _Users;
 }

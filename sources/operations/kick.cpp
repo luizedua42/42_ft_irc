@@ -4,8 +4,9 @@ void Server::kick(std::vector<std::string> options, int userFD) {
 	User* user = getUserByFD(userFD);
 	std::string response;
 
-    if (options.size() < 2) {
+    if (options.size() == 0 || options[0] == "") {
 		response = IRC + ERR_NEEDMOREPARAMSNBR + " KICK " + ERR_NEEDMOREPARAMS + END;
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
     }
 

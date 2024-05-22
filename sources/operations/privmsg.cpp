@@ -60,16 +60,12 @@ void Server::privmsg(std::vector<std::string> options, int userFD) {
 	std::cout << "Sending response: " << response << std::endl;
 	std::map<std::string, User*> users = channelPtr->getNonOperators();
 	for (std::map<std::string, User*>::iterator it = users.begin(); it != users.end(); ++it) {
-		if (it->second->getNickName() != user->getNickName()) {
-			if(it->second->getuserFD() != userFD)
+		if(it->second && it->second->getuserFD() != userFD)
 				send(it->second->getuserFD(), response.c_str(), response.size(), 0);
-		}
 	}
 	std::map<std::string, User*> operators = channelPtr->getOperators();
 	for (std::map<std::string, User*>::iterator it = operators.begin(); it != operators.end(); ++it) {
-		if (it->second->getNickName() != user->getNickName()) {
-			if(it->second->getuserFD() != userFD)
+		if(it->second && it->second->getuserFD() != userFD)
 				send(it->second->getuserFD(), response.c_str(), response.size(), 0);
-		}
 	}
 }
