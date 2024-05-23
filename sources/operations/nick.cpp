@@ -2,11 +2,12 @@
 
 void Server::nick(std::vector<std::string> options, int userFD) {
 	std::string response;
-	if(options.size() < 1){
+	if(options.size() < 1) {
 		response = IRC + ERR_NONICKNAMEGIVENNBR + ERR_NONICKNAMEGIVEN + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
+
 	User* user = Server::getUserByFD(userFD);
 	if(user == NULL)
 		return;

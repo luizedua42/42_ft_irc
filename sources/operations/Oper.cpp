@@ -1,11 +1,3 @@
-/**======================
-*            42sp
-* @file      : Oper.cpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 25/04/2024
-*========================**/
-
 #include "../../headers/mainHeader.hpp"
 
 std::vector<std::string> Server::parseOptions(std::string str) {
@@ -18,6 +10,8 @@ std::vector<std::string> Server::parseOptions(std::string str) {
 		else
 			splitted.push_back(word);
 	}
+	if (splitted.size() == 0)
+		splitted.push_back("");
 	return splitted;
 }
 
@@ -25,7 +19,7 @@ std::vector<std::string> splitBuff(std::string buff) {
 	std::vector<std::string> splittedBuff;
 	std::string word;
 	std::stringstream ss(buff);
-	while (std::getline(ss, word, '\n')) {
+	while (!ss.eof() && std::getline(ss, word, '\n')) {
 		splittedBuff.push_back(word);
 	}
 	return splittedBuff;
@@ -37,15 +31,16 @@ void Server::unknownCommand(std::string command, int userFD) {
 		std::cerr << "Error sending message" << std::endl;
 }
 
-void Server::selectOptions(std::string buff, int userFD) {
+void Server::selectOptions(std::string& buff, int userFD) {
 	std::vector<std::string> splittedBuff = splitBuff(buff);
 	User* client = Server::getUserByFD(userFD);
 	std::string requests[] = {"CAP", "USER", "NICK", "JOIN", "PRIVMSG", "QUIT", "MODE", "TOPIC", "INVITE", "KICK", "WHO", "PASS", "PART"};
 
-	do{
+	do {
 		int i = 0;
 		std::string options = splittedBuff[0].substr(0, splittedBuff[0].find_first_of(" "));
 		std::cout << "buff: " << buff << std::endl;
+		std::cout << "client: " << userFD << std::endl;
 		for(; i < 13; i++) {
 			if(options == requests[i])
 				break;
@@ -54,6 +49,7 @@ void Server::selectOptions(std::string buff, int userFD) {
 			if (i != 0 && i != 1 && i != 2 && i != 11) {
 				std::string response = "You have not registered\r\n";
 				send(userFD, response.c_str(), response.size(), 0);
+				client->clientBuff.clear();
 				return;
 			}
 		}
@@ -75,13 +71,16 @@ void Server::selectOptions(std::string buff, int userFD) {
 				privmsg(parseOptions(parsedOptions), userFD);
 				break;
 			case 5:
+				client->clientBuff.clear();
 				quit(parseOptions(parsedOptions), userFD);
+				splittedBuff.erase(splittedBuff.begin());
+				return;
 				break;
 			case 6:
 				mode(parseOptions(parsedOptions), userFD);
 				break;
 			case 7:
-				topic(parseOptions(parsedOptions), userFD);
+				topic(parsedOptions, userFD);
 				break;
 			case 8:
 				invite(parseOptions(parsedOptions), userFD);
@@ -93,7 +92,8 @@ void Server::selectOptions(std::string buff, int userFD) {
 				who(parseOptions(parsedOptions), userFD);
 				break;
 			case 11:
-				pass(parseOptions(parsedOptions), userFD);
+				if (pass(parseOptions(parsedOptions), userFD) == true)
+					return;
 				break;
 			case 12:
 				part(parseOptions(parsedOptions), userFD);
@@ -103,5 +103,6 @@ void Server::selectOptions(std::string buff, int userFD) {
 				break;
 		}
 		splittedBuff.erase(splittedBuff.begin());
-		} while (!splittedBuff.empty());
+	} while (!splittedBuff.empty());
+	client->clientBuff.clear();
 }

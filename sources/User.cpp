@@ -1,15 +1,4 @@
-/**======================
-*            42sp
-* @file      : User.cpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 24/04/2024
-*========================**/
-
 #include "../headers/mainHeader.hpp"
-
-
-//Getters and Setters
 
 void User::setuserFD(int userFD) {
 	_userFD = userFD;

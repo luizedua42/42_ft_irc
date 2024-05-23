@@ -41,22 +41,29 @@ namespace mode {
 	}
 }
 
-void Server::mode(std::vector<std::string> options, int clientFd) {
+void Server::mode(std::vector<std::string> options, int userFD) {
 	std::string response;
 	std::string mode;
 	
-	User* user = getUserByFD(clientFd);
+	User* user = getUserByFD(userFD);
 	std::string channelName = options[0];
 	Channel* channel = getChannel(channelName);
 	if(channel == NULL) {
 		response = IRC + ERR_NOSUCHCHANNELNBR + user->getNickName() + " " + channelName + ERR_NOSUCHCHANNEL + END;
-		send(clientFd, response.c_str(), response.size(), 0);
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
+
 	if(options.size() == 1 || options[1] == "") {
 		std::string modes = channel->getAllModes();
 		response = IRC + RPL_CHANNELMODEISNBR + user->getNickName() + " " + channelName + " " + modes + END;
-		send(clientFd, response.c_str(), response.size(), 0);
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+	}
+	
+	if (!channel->isUserOperator(user->getNickName())) {
+		response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
+		send(userFD, response.c_str(), response.size(), 0);
 		return;
 	}
 
@@ -104,7 +111,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 5:
 			if (modeParam == "") {
 				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName + " k * :You must specify a parameter for the key mode. Syntax: <key>." + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
@@ -115,19 +122,13 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 6:
 			if (modeParam == "") {
 				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
-				send(clientFd, response.c_str(), response.size(), 0);
-				return;
-			}
-
-			if (!channel->isUserOperator(user->getNickName())) {
-				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
 			if (paramUser == NULL) {
 				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
@@ -142,19 +143,13 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 7:
 			if (modeParam == "") {
 				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " o * :You must specify a parameter for the nick mode. Syntax: <nick>." + END;
-				send(clientFd, response.c_str(), response.size(), 0);
-				return;
-			}
-
-			if (!channel->isUserOperator(user->getNickName())) {
-				response = IRC + ERR_CHANOPRIVSNEEDEDNBR + user->getNickName() + " " + channelName + ERR_CHANOPRIVSNEEDED + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
 			if (paramUser == NULL) {
 				response = IRC + ERR_NOSUCHNICKNBR + modeParam + ERR_NOSUCHNICK + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
@@ -163,7 +158,6 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 			}
 
 			mode::setOp(channel, modeParam);
-			sendNames(paramUser, channel);
 			response += "+o";
 			break;
 
@@ -175,7 +169,7 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 		case 9:
 			if (modeParam == "") {
 				response = IRC + ERR_NEEDMOREPARAMSNBR + user->getNickName() + channelName + " " + channelName +  " l * :You must specify a parameter for the limit mode. Syntax: <limit>." + END;
-				send(clientFd, response.c_str(), response.size(), 0);
+				send(userFD, response.c_str(), response.size(), 0);
 				return;
 			}
 
@@ -189,5 +183,5 @@ void Server::mode(std::vector<std::string> options, int clientFd) {
 	}
 
 	response += " " + modeParam + END;
-	send(clientFd, response.c_str(), response.size(), 0);
+	send(userFD, response.c_str(), response.size(), 0);
 }

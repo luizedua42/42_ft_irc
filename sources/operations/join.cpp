@@ -19,7 +19,14 @@ void Server::join(std::vector<std::string> options, int userFD) {
 
 	std::string response;
 	std::vector<std::string> channels;
-    splitString(options[0], ',', channels);
+
+	if (options[0].empty() || (options.size() > 1 && options[1].empty())) {
+		response = IRC + ERR_NEEDMOREPARAMSNBR + " JOIN " + ERR_NEEDMOREPARAMS + END;
+		send(userFD, response.c_str(), response.size(), 0);
+		return;
+    }
+
+	splitString(options[0], ',', channels);
 
     std::vector<std::string> passwords;
     if (options.size() > 1) {
@@ -75,9 +82,11 @@ void Server::join(std::vector<std::string> options, int userFD) {
 		
 		std::cout << " Joining channel: " << channels[i] << std::endl;
 		std::string response = ":" + user->getNickName() + " JOIN " + channels[i] + END;
-		if(channelPtr->getTopic() != "")
-			response += ":" + user->getNickName() + " TOPIC " + channels[i] + " :" + channelPtr->getTopic() + END;
 		send(userFD, response.c_str(), response.size(), 0);
-		sendNames(user, channelPtr);
+
+		if (!channelPtr->getTopic().empty()) {
+            response = IRC + RPL_TOPICNBR + user->getNickName() + " " + channels[i] + " :" + channelPtr->getTopic() + END;
+            send(userFD, response.c_str(), response.size(), 0);
+        }
 	}
 }

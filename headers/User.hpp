@@ -1,16 +1,7 @@
-/**======================
-*            42sp
-* @file      : User.hpp
-* @author    : luizedua
-* @email     : luizedua@student.42sp.org.br
-* @createdOn : 24/04/2024
-*========================**/
 #pragma once
 #ifndef User_HPP
 # define User_HPP
 # include "mainHeader.hpp"
-
-// class Channel;
 
 class User {
 	
@@ -22,7 +13,6 @@ class User {
 		std::string _userName;
 		std::string _password;
 	public:
-		//Getters and Setters
 		std::string	clientBuff;
 		void setuserFD(int userFD);
 		void setUserName(std::string userName);

@@ -4,7 +4,7 @@ void Server::invite(const std::vector<std::string> options, int userFD) {
 	std::string response;
 	User* user = getUserByFD(userFD);
 
-    if (options.size() < 2) {
+    if (options.size() == 0 || options[0] == "") {
 		response = IRC + ERR_NEEDMOREPARAMSNBR + " INVITE " + ERR_NEEDMOREPARAMS + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
