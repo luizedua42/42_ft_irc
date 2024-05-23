@@ -80,7 +80,7 @@ void Server::selectOptions(std::string& buff, int userFD) {
 				mode(parseOptions(parsedOptions), userFD);
 				break;
 			case 7:
-				topic(parseOptions(parsedOptions), userFD);
+				topic(parsedOptions, userFD);
 				break;
 			case 8:
 				invite(parseOptions(parsedOptions), userFD);
