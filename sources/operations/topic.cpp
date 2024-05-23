@@ -5,11 +5,12 @@ static std::vector<std::string>splitTopic(std::string str) {
 	size_t spacePos = str.find(' ');
 	if (spacePos != std::string::npos) {
 		std::string firstWord = str.substr(0, spacePos);
-		std::string remaining = str.substr(spacePos + 1);
+		//cutting "\r\n"
+		std::string remaining = str.substr(spacePos + 1, str.find('\r') - spacePos - 1);
 		result.push_back(firstWord);
 		result.push_back(remaining);
 	} else {
-		result.push_back(str);
+		result.push_back(str.substr(0,str.find("\r")));
 	}
 	return result;
 }
@@ -19,6 +20,7 @@ void Server::topic(std::string options, int userFD) {
 	std::vector<std::string> splittedOptions = splitTopic(options);
 	std::string channelName = splittedOptions[0];
 
+	std::cout << "channelName: " << channelName << std::endl;
 	if (channelName.empty()){
 		response = IRC + ERR_NEEDMOREPARAMSNBR + " TOPIC " + ERR_NEEDMOREPARAMS + END;		
 		send(userFD, response.c_str(), response.size(), 0);
@@ -28,6 +30,7 @@ void Server::topic(std::string options, int userFD) {
 	Channel* channelPtr = getChannel(channelName);
 
 	if (channelPtr == NULL) {
+		std::cout << "channelPtr is NULL" << std::endl;
 		response = IRC + ERR_NOSUCHCHANNELNBR + channelName + ERR_NOSUCHCHANNEL + END;
 		send(userFD, response.c_str(), response.size(), 0);
 		return;
